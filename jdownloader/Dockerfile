@@ -40,7 +40,7 @@ RUN set -ex \
     && wget -O /${USER_NAME}/JDownloader.jar --progress=bar:force ${JDOWNLOADER_LINK} \
 
 #    && apk del wget ca-certificates curl glibc-i18n \
-    && apk del wget ca-certificates curl
+    && apk del wget ca-certificates curl \
     && rm -rf /tmp/* /var/cache/apk/* /var/lib/apk/lists/*
 
 ADD start.sh /start.sh
