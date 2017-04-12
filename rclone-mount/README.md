@@ -16,23 +16,25 @@ The Container uses a trap_handler script to handle docker stop/restart or rclone
 <a name="install-step1"></a>
 ## USAGE:
 
-    docker run -d --name rclone-mount --restart=unless-stopped --cap-add SYS_ADMIN --device /dev/fuse --security-opt apparmor:unconfined -e RemotePath="mediaefs:" -e MountCommands="--allow-other --allow-non-empty --dir-cache-time 30m" -v /home/USER/.rclone.conf:/config/.rclone.conf -v /mnt/HostMountPoint:/mnt/mediaefs:shared mumiehub/rclone-mount
+    docker run -d --name rclone-mount --restart=unless-stopped --cap-add SYS_ADMIN --device /dev/fuse
+    --security-opt apparmor:unconfined -e RemotePath="mediaefs:" -e MountCommands="--allow-other --allow-non-empty
+    --dir-cache-time 30m" -v /home/USER/.rclone.conf:/config/.rclone.conf -v /mnt/HostMountPoint:/mnt/mediaefs:shared mumiehub/rclone-mount
 
 > needed volume mappings:
 
 - -v /home/USER/.rclone.conf:/config/.rclone.conf
-- -v /mnt/HostMountPoint:/mnt/mediaefs:shared mumiehub/rclone-mount
+- -v /mnt/HostMountPoint:/mnt/mediaefs:shared
 
 ## Environment Variables:
 
 ```vim
 -e AccessFolder="/mnt"
-"access from other containers with --volumes-from rclone-mount or -v /mnt:/mnt:slave changes of AccessFolder have no impact because its the exposed folder in the dockerfile so --volumes-from rclone-mount is always /mnt
+"access from other containers with --volumes-from rclone-mount or -v /mnt:/mnt:slave , changes of AccessFolder have no impact because its the exposed folder in the dockerfile, --volumes-from rclone-mount is always /mnt
 
+-e RemotePath="mediaefs:"
+"remote name in your rclone config, can be your crypt remote:/path
 
--e RemotePath="mediaefs:" "#remote name in your rclone config, can be your crypt remote:/path
-
--e MountPoint="/mnt/mediaefs" "#INSIDE Container from rclone: needs to match volume mapping -v /mnt/HostMountPoint:/mnt/mediaefs:shared
+-e MountPoint="/mnt/mediaefs" "INSIDE Container from rclone: needs to match volume mapping -v /mnt/HostMountPoint:/mnt/mediaefs:shared
 
 -e ConfigDir="/config" "#INSIDE Container: -v /home/USER/.rclone.conf:/config/.rclone.conf
 -e ConfigName=".rclone.conf" "#INSIDE Container: -v /home/USER/.rclone.conf:/config/.rclone.conf
@@ -45,10 +47,10 @@ The Container uses a trap_handler script to handle docker stop/restart or rclone
 ### Use your own MountCommands with:
     -e MountCommands="--allow-other --allow-non-empty --dir-cache-time 30m --buffer-size 64M"
 All Commands can be found at: `https://rclone.org/commands/rclone_mount/`.
-Use --buffer-size 64M (dont go to high) when you encounter some "Direct Stream" Problems on Plex Media Server (Samsung Smart TV for example).
+Use `--buffer-size 64M` (dont go to high) when you encounter some "Direct Stream" Problems on Plex Media Server (Samsung Smart TV for example).
 
 ## Troubleshooting:
-When you force remove the container, you have to sudo fusermount -u /mnt/mediaefs on the hostsystem!
+When you force remove the container, you have to `sudo fusermount -u /mnt/mediaefs` on the hostsystem!
 
 
 
