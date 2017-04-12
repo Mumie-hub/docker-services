@@ -16,8 +16,8 @@ echo
 
 # Change UID / GID of JDownloader user.
 printf "Updating UID / GID... "
-[[ $(id -u ${USER_NAME}) == ${USER_UID} ]] || usermod  -o -u ${USER_UID} ${USER_NAME}
-[[ $(id -g ${USER_NAME}) == ${USER_UID} ]] || groupmod -o -g ${USER_UID} ${USER_NAME}
+#[[ $(id -u ${USER_NAME}) == ${USER_UID} ]] || usermod  -o -u ${USER_UID} ${USER_NAME}
+#[[ $(id -g ${USER_NAME}) == ${USER_UID} ]] || groupmod -o -g ${USER_UID} ${USER_NAME}
 echo "[DONE]"
 
 # Set directory permissions.

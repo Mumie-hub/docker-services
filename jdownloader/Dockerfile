@@ -1,6 +1,5 @@
 FROM alpine
 
-
 MAINTAINER Mumie
 
 ENV USER_UID="1002" \
@@ -27,6 +26,9 @@ RUN set -ex \
     && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.25-r0/glibc-2.25-r0.apk \
     && apk add glibc-2.25-r0.apk \
 
+#    && ( /usr/glibc-compat/bin/localedef --force --inputfile POSIX --charmap UTF-8 C.UTF-8 || true ) \
+#    && echo "export $LANG" > /etc/profile.d/locale.sh \
+#    && /usr/glibc-compat/sbin/ldconfig /lib /usr/glibc-compat/lib \
     # Downloading Oracle Java Server-Jre
     && mkdir /opt \
     && curl -jksSLH "Cookie: oraclelicense=accept-securebackup-cookie" -o /tmp/java.tar.gz \
@@ -36,7 +38,7 @@ RUN set -ex \
     && find /opt/jdk/ -maxdepth 1 -mindepth 1 | grep -v jre | xargs rm -rf \
     && cd /opt/jdk/ \
     && ln -s ./jre/bin ./bin \
-    # adding $USER_NAME as Group and User needs to be edited
+    # adding $USER_NAME as Group and User
     && addgroup -g ${USER_UID} ${USER_NAME} \
     && adduser -D -u ${USER_UID} -G ${USER_NAME} -s /bin/sh -h /${USER_NAME} ${USER_NAME} \
     # Downloading jDownloader jar File
