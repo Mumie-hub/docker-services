@@ -7,7 +7,7 @@ Use it with:
 docker run -d --name rclone-mount --restart=unless-stopped --cap-add SYS_ADMIN --device /dev/fuse --security-opt apparmor:unconfined -e RemotePath="mediaefs:" -e MountCommands="--allow-other --allow-non-empty --dir-cache-time 30m" -v /home/USER/.rclone.conf:/config/.rclone.conf -v /mnt/HostMountPoint:/mnt/mediaefs:shared mumiehub/rclone-mount
 
 ENV:
--e AccessFolder="/mnt" #access from other containers with --volumes-from rclone-mount or -v /mnt:/mnt:slave
+<a name="-e AccessFolder="/mnt""></a> #access from other containers with --volumes-from rclone-mount or -v /mnt:/mnt:slave
 changes of AccessFolder have no impact because its the exposed folder in the dockerfile so --volumes-from rclone-mount is always /mnt !
 
 -e RemotePath="mediaefs:" #remote name in your rclone config, can be your crypt remote:/path
