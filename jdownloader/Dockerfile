@@ -1,0 +1,52 @@
+FROM alpine
+
+MAINTAINER Mumie
+
+ENV USER_UID="1200" \
+    USER_NAME="jdownloader" \
+    JDOWNLOADER_LINK="http://installer.jdownloader.org/JDownloader.jar"
+    
+ENV JAVA_VERSION=8 \
+    JAVA_VERSION_MINOR=121 \
+    JAVA_VERSION_BUILD=13 \
+    JAVA_PACKAGE=server-jre \
+    JAVA_HOME=/opt/jdk \
+    PATH=${PATH}:/opt/jdk/bin \
+    GLIBC_VERSION=2.23-r3 \
+    LANG=C.UTF-8
+
+# alpine - openjdk8-jre-base java-jna openjdk8-jre-lib libstdc++  glibc-bin glibc-i18n
+# libstdc++ and glibc-i18n needed for jdownloader building 7zip Package
+RUN set -ex \
+    && apk add --no-cache --update wget bash ca-certificates su-exec curl libstdc++ \
+    && wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://raw.githubusercontent.com/sgerrand/alpine-pkg-glibc/master/sgerrand.rsa.pub \
+    && apk add --no-cache -X https://apkproxy.heroku.com/andyshinn/alpine-pkg-glibc glibc glibc-i18n \
+    # Downloading Oracle Java Server-Jre
+    && mkdir /opt \
+    && curl -jksSLH "Cookie: oraclelicense=accept-securebackup-cookie" -o /tmp/java.tar.gz \
+        http://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION}u${JAVA_VERSION_MINOR}-b${JAVA_VERSION_BUILD}/e9e7ea248e2c4826b92b3f075a80e441/${JAVA_PACKAGE}-${JAVA_VERSION}u${JAVA_VERSION_MINOR}-linux-x64.tar.gz \
+    && tar -C /opt -zxvf /tmp/java.tar.gz \
+    && ln -s /opt/jdk1.${JAVA_VERSION}.0_${JAVA_VERSION_MINOR} /opt/jdk \
+    && find /opt/jdk/ -maxdepth 1 -mindepth 1 | grep -v jre | xargs rm -rf \
+    && cd /opt/jdk/ \
+    && ln -s ./jre/bin ./bin \
+    # adding $USER_NAME as Group and User, needs to be edited :)
+    && addgroup -g ${USER_UID} ${USER_NAME} \
+    && adduser -D -u ${USER_UID} -G ${USER_NAME} -s /bin/sh -h /${USER_NAME} ${USER_NAME} \
+    # Downloading jDownloader jar File
+    && wget -O /${USER_NAME}/JDownloader.jar --progress=bar:force ${JDOWNLOADER_LINK} \
+
+	&& apk del wget ca-certificates curl glibc-i18n \
+	&& rm -rf /tmp/* /var/cache/apk/* /var/lib/apk/lists/*
+
+ADD start.sh /start.sh
+RUN chmod +x /start.sh
+
+#USER $USER_NAME
+VOLUME /${USER_NAME}/cfg
+WORKDIR /${USER_NAME}
+CMD ["/start.sh"]
+
+# Run Commands
+#-v /pathtoconfig/jdownloader:/jdownloader/cfg
+#-v /downloadpath/:/jdownloader/Downloads
