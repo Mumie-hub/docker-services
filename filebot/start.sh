@@ -57,7 +57,6 @@ check_filebot_sh_version
 #setup_opensubtitles_account
 chown -R ${USER_NAME}:${USER_NAME} $CONFIG_DIR
 
-# Run once at the start
 #echo "$(ts) start.sh: Running FileBot on startup"
 #/files/runas.sh $USER_ID $GROUP_ID $UMASK /files/filebot.sh &
 umask $UMASK
@@ -69,4 +68,3 @@ echo "$(ts) start.sh: Starting Monitoring"
 #su -p $USER_NAME -c "exec /files/monitor.sh"       #$CONFIG_FILE
 #exec /sbin/setuser $USER_NAME /files/monitor.sh
 exec python3 /setuser.py $USER_NAME /files/monitor.sh
-#exec su -pc "exec /files/monitor.sh 2>&1 >/dev/null" $USER_NAME

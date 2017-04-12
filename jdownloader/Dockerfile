@@ -2,7 +2,7 @@ FROM alpine
 
 MAINTAINER Mumie
 
-ENV USER_UID="1200" \
+ENV USER_UID="1002" \
     USER_NAME="jdownloader" \
     JDOWNLOADER_LINK="http://installer.jdownloader.org/JDownloader.jar"
     
@@ -20,7 +20,15 @@ ENV JAVA_VERSION=8 \
 RUN set -ex \
     && apk add --no-cache --update wget bash ca-certificates su-exec curl libstdc++ \
     && wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://raw.githubusercontent.com/sgerrand/alpine-pkg-glibc/master/sgerrand.rsa.pub \
-    && apk add --no-cache -X https://apkproxy.heroku.com/andyshinn/alpine-pkg-glibc glibc glibc-i18n \
+#    && apk add --no-cache -X https://apkproxy.heroku.com/andyshinn/alpine-pkg-glibc glibc glibc-i18n \
+#   apkproxy.heroku.com/andyshinn proxy broken
+
+    && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.25-r0/glibc-2.25-r0.apk \
+    && apk add glibc-2.25-r0.apk \
+
+#    && ( /usr/glibc-compat/bin/localedef --force --inputfile POSIX --charmap UTF-8 C.UTF-8 || true ) \
+#    && echo "export $LANG" > /etc/profile.d/locale.sh \
+#    && /usr/glibc-compat/sbin/ldconfig /lib /usr/glibc-compat/lib \
     # Downloading Oracle Java Server-Jre
     && mkdir /opt \
     && curl -jksSLH "Cookie: oraclelicense=accept-securebackup-cookie" -o /tmp/java.tar.gz \
@@ -30,14 +38,15 @@ RUN set -ex \
     && find /opt/jdk/ -maxdepth 1 -mindepth 1 | grep -v jre | xargs rm -rf \
     && cd /opt/jdk/ \
     && ln -s ./jre/bin ./bin \
-    # adding $USER_NAME as Group and User, needs to be edited :)
+    # adding $USER_NAME as Group and User
     && addgroup -g ${USER_UID} ${USER_NAME} \
     && adduser -D -u ${USER_UID} -G ${USER_NAME} -s /bin/sh -h /${USER_NAME} ${USER_NAME} \
     # Downloading jDownloader jar File
     && wget -O /${USER_NAME}/JDownloader.jar --progress=bar:force ${JDOWNLOADER_LINK} \
 
-	&& apk del wget ca-certificates curl glibc-i18n \
-	&& rm -rf /tmp/* /var/cache/apk/* /var/lib/apk/lists/*
+#    && apk del wget ca-certificates curl glibc-i18n \
+    && apk del wget ca-certificates curl \
+    && rm -rf /tmp/* /var/cache/apk/* /var/lib/apk/lists/*
 
 ADD start.sh /start.sh
 RUN chmod +x /start.sh

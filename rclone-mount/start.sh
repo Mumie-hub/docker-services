@@ -10,9 +10,6 @@ echo "Mounting $RemotePath to $MountPoint at $(date +%Y.%m.%d-%T)"
 
 #export EnvVariable
 
-#/usr/sbin/rclone --config $ConfigPath mount $RemotePath $MountPoint $MountCommands & #$EnvVariable
-#pid_rclone="$!"
-
 function term_handler {
   kill -SIGTERM ${!} #kill last spawned background process
   echo "sending SIGTERM to child pid"
@@ -39,11 +36,5 @@ do
   fuse_unmount
 #  sleep 1
 done
-
-#until /usr/sbin/rclone --config $ConfigPath mount $RemotePath $MountPoint $MountCommands; do
-#    fuse_unmount
-#    echo "rclone crashed with exit code $?.  Respawning.." >&2
-#    sleep 1
-#done
 
 exit 144
