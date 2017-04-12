@@ -169,6 +169,7 @@ do
     fi
 
     # Monster up as many events as possible, until we hit the either the settle duration, or the max wait threshold.
+    # will be removed
     wait_for_events_to_stabilize
 
     # Wait until it's okay to run the command again, monstering up events as we do so
