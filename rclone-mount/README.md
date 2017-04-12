@@ -23,14 +23,20 @@ The Container uses a trap_handler script to handle docker stop/restart or rclone
 <a name="install-step1"></a>
 > USAGE:
 
+```vim
+docker run -d --name rclone-mount --restart=unless-stopped --cap-add SYS_ADMIN
+--device /dev/fuse --security-opt apparmor:unconfined -e RemotePath="mediaefs:"
+-e MountCommands="--allow-other --allow-non-empty --dir-cache-time 30m"
+-v /home/USER/.rclone.conf:/config/.rclone.conf -v /mnt/HostMountPoint:/mnt/mediaefs:shared mumiehub/rclone-mount
 ```
-docker run -d --name rclone-mount --restart=unless-stopped --cap-add SYS_ADMIN --device /dev/fuse --security-opt apparmor:unconfined -e RemotePath="mediaefs:" -e MountCommands="--allow-other --allow-non-empty --dir-cache-time 30m" -v /home/USER/.rclone.conf:/config/.rclone.conf -v /mnt/HostMountPoint:/mnt/mediaefs:shared mumiehub/rclone-mount
-```
----
+
+
 >Environment Variables:
 
 ```vim
--e AccessFolder="/mnt" "access from other containers with --volumes-from rclone-mount or -v /mnt:/mnt:slave changes of AccessFolder have no impact because its the exposed folder in the dockerfile so --volumes-from rclone-mount is always /mnt
+-e AccessFolder="/mnt"
+
+" access from other containers with --volumes-from rclone-mount or -v /mnt:/mnt:slave changes of " AccessFolder have no impact because its the exposed folder in the dockerfile so --volumes-from " rclone-mount is always /mnt
 ```
 
 ```vim
@@ -43,14 +49,14 @@ docker run -d --name rclone-mount --restart=unless-stopped --cap-add SYS_ADMIN -
 -e ConfigDir="/config" "#INSIDE Container: -v /home/USER/.rclone.conf:/config/.rclone.conf
 -e ConfigName=".rclone.conf" "#INSIDE Container: -v /home/USER/.rclone.conf:/config/.rclone.conf
 ```
+* needs to match
 ```vim
 -e MountCommands="--allow-other --allow-non-empty --dir-cache-time 30m"
 "default mount commands, (if you not parse any with -e MountCommands="xxx", default will be used)
 ```
-Use your own MountCommands with:
--e MountCommands="--allow-other --allow-non-empty --dir-cache-time 30m --buffer-size 64M"
-
-all Commands can be found at: https://rclone.org/commands/rclone_mount/
+### Use your own MountCommands with:
+-e MountCommands="--allow-other --allow-non-empty --dir-cache-time 30m --buffer-size 64M".
+All Commands can be found at: `https://rclone.org/commands/rclone_mount/`.
 Use --buffer-size 64M (dont go to high) when you encounter some "Direct Stream" Problems on Plex Media Server (Samsung Smart TV for example).
 
 ## Troubleshooting:
@@ -58,13 +64,12 @@ When you force remove the container, you have to sudo fusermount -u /mnt/mediaef
 
 
 
-
-
 Todo
 ----
 
-* [ ] more filetypes to support
+* [ ] more settings
 * [ ] more specific FAQ and Troubleshooting help
+* [ ] Auto Update Function
 
 ## License
 
