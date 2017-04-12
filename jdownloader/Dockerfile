@@ -20,7 +20,10 @@ ENV JAVA_VERSION=8 \
 RUN set -ex \
     && apk add --no-cache --update wget bash ca-certificates su-exec curl libstdc++ \
     && wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://raw.githubusercontent.com/sgerrand/alpine-pkg-glibc/master/sgerrand.rsa.pub \
-    && apk add --no-cache -X https://apkproxy.heroku.com/andyshinn/alpine-pkg-glibc glibc glibc-i18n \
+#    && apk add --no-cache -X https://apkproxy.heroku.com/andyshinn/alpine-pkg-glibc glibc glibc-i18n \
+#   apkproxy.heroku.com/andyshinn proxy broken
+    && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.25-r0/glibc-2.25-r0.apk \
+    && apk add glibc-2.25-r0.apk \
     # Downloading Oracle Java Server-Jre
     && mkdir /opt \
     && curl -jksSLH "Cookie: oraclelicense=accept-securebackup-cookie" -o /tmp/java.tar.gz \

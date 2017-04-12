@@ -16,7 +16,10 @@ ENV USER_NAME="teamspeak" \
 
 RUN apk add --no-cache --update bzip2 ca-certificates openssl python3 \
     && wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://raw.githubusercontent.com/sgerrand/alpine-pkg-glibc/master/sgerrand.rsa.pub \
-    && apk add --no-cache -X http://apkproxy.heroku.com/andyshinn/alpine-pkg-glibc glibc glibc-bin \
+#    && apk add --no-cache -X http://apkproxy.heroku.com/andyshinn/alpine-pkg-glibc glibc glibc-bin \
+#   apkproxy.heroku.com/andyshinn proxy broken
+    && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.25-r0/glibc-2.25-r0.apk \
+    && apk add glibc-2.25-r0.apk \
     && adduser -D -u ${USER_UID} -s /bin/false $USER_NAME \
     && apk del openssl ca-certificates \
     && rm -rf /tmp/* /var/cache/apk/* /var/lib/apk/lists/*
