@@ -24,8 +24,9 @@ RUN set -ex \
 #   apkproxy.heroku.com/andyshinn proxy broken
 
     && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.25-r0/glibc-2.25-r0.apk \
+    && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.25-r0/glibc-bin-2.25-r0.apk \
     && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.25-r0/glibc-i18n-2.25-r0.apk \
-    && apk add glibc-2.25-r0.apk glibc-i18n-2.25-r0.apk \
+    && apk add glibc-2.25-r0.apk glibc-bin-2.25-r0.apk glibc-i18n-2.25-r0.apk \
 
 #    && ( /usr/glibc-compat/bin/localedef --force --inputfile POSIX --charmap UTF-8 C.UTF-8 || true ) \
 #    && echo "export $LANG" > /etc/profile.d/locale.sh \
