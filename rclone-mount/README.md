@@ -2,30 +2,35 @@
   <img src="https://rclone.org/img/rclone-120x120.png" alt="vim-devicons">
 </h1>
 
-Rclone Mount Container Image (**`40MB`**) based on `alpine:latest`
+Rclone Mount Container (*`12MB`*) based on `alpine:latest`
 ---
 
 
 
 
-Lightweight Container with compiled rclone (https://github.com/ncw/rclone master), to mount your cloudstorage like amazon cloud drive inside a container and make it available to other containers like your Plex Media Server or on your hostsystem (mountpoint on host is shared). You need a working rclone.conf first (from other host). rclone crypt remote can also be used.
+Lightweight and simple Container Image (`12MB`) with compiled rclone (https://github.com/ncw/rclone master), to mount your cloudstorage like amazon cloud drive inside a container and make it available to other containers like your Plex Media Server or on your hostsystem (mountpoint on host is shared). You need a working rclone.conf first (from other host). rclone crypt remote can also be used.
 
 
-The Container uses a trap_handler script to handle docker stop/restart or rclone crashes ( fusermount -u $MountPoint is applied on crash or SIGTERM) on PID 1.
+The Container uses a tiny trap_handler function, to handle docker stop/restart or rclone crashes ( fusermount -u $MountPoint is applied on crash or SIGTERM) on PID 1.
 
 <a name="install-step1"></a>
-## USAGE:
+# USAGE Example:
 
     docker run -d --name rclone-mount --restart=unless-stopped --cap-add SYS_ADMIN --device /dev/fuse
     --security-opt apparmor:unconfined -e RemotePath="mediaefs:" -e MountCommands="--allow-other --allow-non-empty
     --dir-cache-time 30m" -v /home/USER/.rclone.conf:/config/.rclone.conf -v /mnt/HostMountPoint:/mnt/mediaefs:shared mumiehub/rclone-mount
+
+> mendatory commands:
+
+- --cap-add SYS_ADMIN --device /dev/fuse --security-opt apparmor:unconfined
+
 
 > needed volume mappings:
 
 - -v /home/USER/.rclone.conf:/config/.rclone.conf
 - -v /mnt/HostMountPoint:/mnt/mediaefs:shared
 
-## Environment Variables:
+# Environment Variables:
 
 ```vim
 -e AccessFolder="/mnt"
@@ -60,6 +65,7 @@ Todo
 * [ ] more settings
 * [ ] more specific FAQ and Troubleshooting help
 * [ ] Auto Update Function
+* [ ] launch with specific USER_ID
 
 ## License
 
