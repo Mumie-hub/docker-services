@@ -11,7 +11,7 @@ ENV GOPATH="/go" \
 
 ## Alpine with Go Git
 RUN apk add --no-cache --update alpine-sdk ca-certificates go git fuse \
-	&& go get -v github.com/ncw/rclone \
+	&& go get -u -v github.com/ncw/rclone \
 	&& cp /go/bin/rclone /usr/sbin/ \
 	&& rm -rf /go \
 	&& apk del alpine-sdk go git \
