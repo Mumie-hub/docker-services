@@ -10,7 +10,7 @@ ENV GOPATH="/go" \
     MountCommands="--allow-other --allow-non-empty --dir-cache-time 30m"
 
 ## Alpine with Go Git
-RUN apk add --no-cache --update alpine-sdk ca-certificates go git fuse \
+RUN apk add --no-cache --update alpine-sdk ca-certificates go git fuse fuse-dev \
 	&& go get -u -v github.com/ncw/rclone \
 	&& cp /go/bin/rclone /usr/sbin/ \
 	&& rm -rf /go \
