@@ -3,9 +3,7 @@ MAINTAINER Mumie
 
 ENV SERVERPATH="//192.168.1.1/example" \
     MOUNTPOINT="/mnt/smb" \
-    USERNAME="user" \
-    PASSWORD="example" \
-    MountCommands="" \
+    MOUNTOPTIONS="" \
     AccessFolder="/mnt"
 
 ## Alpine with cifs-utils
