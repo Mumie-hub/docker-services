@@ -8,18 +8,18 @@ echo "Mounting SMB from $SERVERPATH to $MOUNTPOINT at $(date +%Y.%m.%d-%T)"
 function term_handler {
   unmount_smb
   echo "exiting now"
-  wait 10
+  wait 5
   exit 0
 }
 
 function unmount_smb {
   echo "Unmounting: $MOUNTPOINT $(date +%Y.%m.%d-%T)"
-  umount -f -v $MOUNTPOINT
+  umount $UMOUNTOPTIONS $MOUNTPOINT
 }
 
 trap term_handler SIGHUP SIGINT SIGTERM
 
-mount.cifs -o $MOUNTOPTIONS $SERVERPATH $MOUNTPOINT
+mount -t cifs -o $MOUNTOPTIONS $SERVERPATH $MOUNTPOINT
 
 while true
 do
