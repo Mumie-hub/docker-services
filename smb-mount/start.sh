@@ -8,7 +8,7 @@ echo "Mounting SMB from $SERVERPATH to $MOUNTPOINT at $(date +%Y.%m.%d-%T)"
 function term_handler {
   unmount_smb
   echo "exiting now"
-  wait 5
+  sleep 5
   exit 0
 }
 
