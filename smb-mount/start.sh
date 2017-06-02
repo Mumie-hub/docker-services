@@ -13,7 +13,7 @@ function term_handler {
 
 function unmount_smb {
   echo "Unmounting: $MOUNTPOINT $(date +%Y.%m.%d-%T)"
-  umount $MOUNTPOINT
+  umount -f $MOUNTPOINT
 }
 
 trap term_handler SIGHUP SIGINT SIGTERM
