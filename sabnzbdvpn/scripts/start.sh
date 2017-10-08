@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. /etc/profile
+#. /etc/profile
 
 # This script will be called with tun/tap device name as parameter 1, and local IP as parameter 4
 # See https://openvpn.net/index.php/open-source/documentation/manuals/65-openvpn-20x-manpage.html (--up cmd)
@@ -16,10 +16,10 @@ if [ ! -e "/dev/random" ]; then
   ln -s /dev/urandom /dev/random
 fi
 
-echo "STARTING SABNZBD Service now"
+echo "STARTING SABNZBD Service now with USER ${USER_NAME}"
 
 # needs to be fixed - service not running as USER_NAME
-#exec sudo -u ${USER_NAME} /etc/init.d/sabnzbdplus start &
-exec sudo -u ${USER_NAME} /usr/bin/sabnzbdplus --config-file $SABNZBD_CONFIG_DIR --server 0.0.0.0:8080 &
+#exec /etc/init.d/sabnzbdplus start &
+exec sudo -u abc /usr/bin/sabnzbdplus --config-file /config --server 127.0.0.1:8080 &
 
 echo "Startup script SABnzbd completed."

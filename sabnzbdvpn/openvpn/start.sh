@@ -1,5 +1,6 @@
 #!/bin/sh
 
+
 # add OpenVPN user/pass
 if [ "${OPENVPN_USERNAME}" = "**None**" ] || [ "${OPENVPN_PASSWORD}" = "**None**" ] ; then
  echo "OpenVPN credentials not set. Is this right?. In case of using Custom Config"
@@ -26,5 +27,8 @@ fi
 CONTROL_OPTS="--script-security 2 --up /scripts/start.sh --down /scripts/stop.sh"
 
 OPENVPN_CONFIG_PATH="$OPENVPN_CONFIG_DIR/$OPENVPN_CONFIG"
+
+#printf "USER=${USER_NAME}\nHOST=0.0.0.0\nPORT=8080\nCONFIG=${SABNZBD_CONFIG_DIR}\n" > /etc/default/sabnzbdplus \
+#/etc/init.d/sabnzbdplus start
 
 exec openvpn $CONTROL_OPTS $OPENVPN_OPTS --config "$OPENVPN_CONFIG_PATH"
