@@ -18,8 +18,7 @@ fi
 
 echo "STARTING SABNZBD Service now with USER ${USER_NAME}"
 
-# needs to be fixed - service not running as USER_NAME
-#exec /etc/init.d/sabnzbdplus start &
-exec sudo -u abc /usr/bin/sabnzbdplus --config-file /config --server 127.0.0.1:8080 &
+# ENV Variables missing - fix needed
+exec sudo -u abc /usr/bin/sabnzbdplus --config-file /config --server 0.0.0.0:8080 &
 
 echo "Startup script SABnzbd completed."

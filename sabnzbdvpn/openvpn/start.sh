@@ -1,15 +1,15 @@
 #!/bin/sh
 
+#. /etc/profile
 
 # add OpenVPN user/pass
 if [ "${OPENVPN_USERNAME}" = "**None**" ] || [ "${OPENVPN_PASSWORD}" = "**None**" ] ; then
  echo "OpenVPN credentials not set. Is this right?. In case of using Custom Config"
 else
   echo "Setting OPENVPN credentials..."
-  mkdir -p /config
-  echo $OPENVPN_USERNAME > /config/openvpn-credentials.txt
-  echo $OPENVPN_PASSWORD >> /config/openvpn-credentials.txt
-  chmod 600 /config/openvpn-credentials.txt
+  echo $OPENVPN_USERNAME > /etc/openvpn/custom/openvpn-credentials.txt
+  echo $OPENVPN_PASSWORD >> /etc/openvpn/custom/openvpn-credentials.txt
+  chmod 600 /etc/openvpn/custom/openvpn-credentials.txt
 fi
 
 #dockerize -template /etc/transmission/environment-variables.tmpl:/etc/transmission/environment-variables.sh /bin/true

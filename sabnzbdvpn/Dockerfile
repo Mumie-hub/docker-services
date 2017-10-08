@@ -1,5 +1,6 @@
 
-FROM ubuntu
+FROM ubuntu:latest
+
 MAINTAINER Mumie
 
 ENV LANG='en_US.UTF-8' \
@@ -19,10 +20,10 @@ ENV LANG='en_US.UTF-8' \
 # Update packages and install software
 RUN apt-get update \
     && apt-get -y install software-properties-common \
-#    && add-apt-repository multiverse \
+    && add-apt-repository ppa:jcfp/ppa \
     && add-apt-repository ppa:jcfp/sab-addons \
     && apt-get update \
-    && apt-get install -y openvpn curl sudo p7zip-full wget sabnzbdplus par2-tbb python-sabyenc \
+    && apt-get install -y openvpn curl sudo sabnzbdplus wget par2-tbb python-sabyenc p7zip-full \
     && curl -sLO https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64.deb \
     && dpkg -i dumb-init_*.deb \
     && rm -rf dumb-init_*.deb \
