@@ -4,10 +4,9 @@ MAINTAINER Mumie
 
 ENV LANG='en_US.UTF-8' \
     LANGUAGE='en_US:en' \
-    LC_ALL='en_US.UTF-8' \
     USER_NAME="abc" \
-    PUID="1003"\
-    PGID=\
+    PUID=1003\
+    PGID=1003\
     OPENVPN_USERNAME=**None**  \
     OPENVPN_PASSWORD=**None** \
     OPENVPN_PROVIDER=**None** \
@@ -28,11 +27,12 @@ RUN apt-get update \
     && rm -rf dumb-init_*.deb \
     && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && groupmod -g 1000 users \
-    && useradd -u ${PUID} -U -d $SABNZBD_CONFIG_DIR -s /bin/false ${USER_NAME} \
-    && usermod -G users ${USER_NAME} \
+    && mkdir -p /home/${USER_NAME} \
+    && useradd -u ${PUID} -U -d /home/${USER_NAME} -s /bin/false ${USER_NAME} \
+    && usermod -G users ${USER_NAME}
     # needs to be fixed no service for sabnzbd and no root
-    && printf "USER=root\nHOST=0.0.0.0\nPORT=8080\nCONFIG=/config\n" > /etc/default/sabnzbdplus \
-    && /etc/init.d/sabnzbdplus start
+    #&& printf "USER=root\nHOST=0.0.0.0\nPORT=8080\nCONFIG=/config\n" > /etc/default/sabnzbdplus \
+    #&& /etc/init.d/sabnzbdplus start
 
 ADD openvpn/ /etc/openvpn/
 ADD scripts/ /scripts/
