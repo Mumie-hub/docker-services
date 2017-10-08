@@ -25,4 +25,6 @@ fi
 
 CONTROL_OPTS="--script-security 2 --up /scripts/start.sh --down /scripts/stop.sh"
 
-exec openvpn $CONTROL_OPTS $OPENVPN_OPTS --config "$OPENVPN_CONFIG"
+OPENVPN_CONFIG_PATH="$OPENVPN_CONFIG_DIR/$OPENVPN_CONFIG"
+
+exec openvpn $CONTROL_OPTS $OPENVPN_OPTS --config "$OPENVPN_CONFIG_PATH"
