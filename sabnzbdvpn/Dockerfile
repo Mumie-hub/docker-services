@@ -3,8 +3,8 @@ FROM ubuntu:latest
 
 MAINTAINER Mumie
 
-ENV LANG='en_US.UTF-8' \
-    LANGUAGE='en_US:en' \
+ENV LANG="en_US.UTF-8" \
+    LANGUAGE="en_US.UTF-8" \
     USER_NAME="abc" \
     PUID=1003\
     PGID=1003\
@@ -23,7 +23,8 @@ RUN apt-get update \
     && add-apt-repository ppa:jcfp/ppa \
     && add-apt-repository ppa:jcfp/sab-addons \
     && apt-get update \
-    && apt-get install -y openvpn curl sudo sabnzbdplus wget par2-tbb python-sabyenc p7zip-full \
+    && apt-get install -y openvpn curl sudo sabnzbdplus wget par2-tbb python-sabyenc p7zip-full locales \
+    && locale-gen en_US.UTF-8 \
     && curl -sLO https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64.deb \
     && dpkg -i dumb-init_*.deb \
     && rm -rf dumb-init_*.deb \
