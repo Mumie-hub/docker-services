@@ -39,8 +39,6 @@ fi
 
 #dockerize -template /etc/transmission/environment-variables.tmpl:/etc/transmission/environment-variables.sh /bin/true
 
-CONTROL_OPTS="--script-security 2 --up /scripts/start.sh --down /scripts/stop.sh"
-
 if [ -n "${LOCAL_NETWORK-}" ]; then
   eval $(/sbin/ip r l m 0.0.0.0 | awk '{if($5!="tun0"){print "GW="$3"\nINT="$5; exit}}')
   if [ -n "${GW-}" -a -n "${INT-}" ]; then
@@ -48,5 +46,9 @@ if [ -n "${LOCAL_NETWORK-}" ]; then
     /sbin/ip r a "$LOCAL_NETWORK" via "$GW" dev "$INT"
   fi
 fi
+
+. /scripts/userSetup.sh
+
+CONTROL_OPTS="--script-security 2 --up /scripts/start.sh --down /scripts/stop.sh"
 
 exec openvpn $CONTROL_OPTS $OPENVPN_OPTS --config "$OPENVPN_CONFIG"

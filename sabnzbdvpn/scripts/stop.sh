@@ -1,4 +1,3 @@
 #! /bin/sh
 
-. /scripts/userSetup.sh
-exec sudo -u ${RUN_AS} /etc/init.d/sabnzbdplus stop &
+exec sudo -u ${USER_NAME} /etc/init.d/sabnzbdplus stop &
