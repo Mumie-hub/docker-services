@@ -7,7 +7,7 @@ ENV GOPATH="/go" \
     MountPoint="/mnt/mediaefs" \
     ConfigDir="/config" \
     ConfigName=".rclone.conf" \
-    MountCommands="--allow-other --allow-non-empty --dir-cache-time 30m"
+    MountCommands="--allow-other --allow-non-empty"
 
 ## Alpine with Go Git
 RUN apk add --no-cache --update alpine-sdk ca-certificates go git fuse fuse-dev \
@@ -25,6 +25,6 @@ VOLUME [$AccessFolder]
 CMD ["/start.sh"]
 
 # Use this args in docker run
-# --cap-add SYS_ADMIN --device /dev/fuse --security-opt apparmor:unconfine
+# --cap-add SYS_ADMIN --device /dev/fuse --security-opt apparmor:unconfined
 # -v /path/to/config/.rclone.conf:/config/.rclone.conf
 # -v /mnt/mediaefs:/mnt/mediaefs:shared

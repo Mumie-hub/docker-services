@@ -23,10 +23,11 @@ function term_handler {
 
 function fuse_unmount {
   echo "Unmounting: fusermount -u $MountPoint $(date +%Y.%m.%d-%T)"
-  fusermount -u $MountPoint
+  fusermount -u -z $MountPoint
 }
 
-trap term_handler SIGHUP SIGINT SIGTERM
+# SIGHUP is for cache clearing
+trap term_handler SIGINT SIGTERM
 
 while true
 do

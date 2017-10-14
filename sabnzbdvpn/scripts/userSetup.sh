@@ -12,19 +12,19 @@ mkdir ${USER_HOME} \
     ${INCOMPLETE_DIR} \
     ${WATCH_DIR}
 
-if [ -n "$PUID" ] && [ ! "$(id -u root)" -eq "$PUID" ]; then
+if [ -n "$PUID" ]; then
     if [ ! "$(id -u ${USER_NAME})" -eq "$PUID" ]; then usermod -o -u "$PUID" ${USER_NAME} ; fi
     if [ ! "$(id -g ${USER_NAME})" -eq "$PGID" ]; then groupmod -o -g "$PGID" ${USER_NAME} ; fi
-
-    echo "Setting owner for transmission paths to ${PUID}:${PGID}"
-#    chown -R ${USER_NAME}:${USER_NAME} ${USER_HOME}
-    chown -R ${USER_NAME}:${USER_NAME} \
-        ${USER_HOME} \
-        ${SABNZBD_CONFIG_DIR} \
-        ${DOWNLOAD_DIR} \
-        ${INCOMPLETE_DIR} \
-        ${WATCH_DIR}
 fi
+
+echo "Setting owner for Folder paths to ${PUID}:${PGID}"
+
+chown -R ${USER_NAME}:${USER_NAME} \
+    ${USER_HOME} \
+    ${SABNZBD_CONFIG_DIR} \
+    ${DOWNLOAD_DIR} \
+    ${INCOMPLETE_DIR} \
+    ${WATCH_DIR}
 
 echo "
 -------------------------------------

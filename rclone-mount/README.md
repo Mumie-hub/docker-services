@@ -1,24 +1,22 @@
-<h1 align="center">
-  <img src="https://rclone.org/img/rclone-120x120.png" alt="vim-devicons">
-</h1>
+[rcloneurl]: https://rclone.org
 
-Rclone Mount Container (*`12MB`*) based on `alpine:latest`
+[![rclone.org](https://rclone.org/img/rclone-120x120.png)][rcloneurl]
+
+Rclone Mount Container based on `alpine:latest`
 ---
+Lightweight and simple Container Image (`38MB`) with compiled rclone (https://github.com/ncw/rclone master), to mount your cloudstorage like amazon cloud drive inside a container and make it available to other containers like your Plex Media Server or on your hostsystem (mountpoint on host is shared). You need a working rclone.conf first (from another host). all rclone remotes can be used.
 
 
+The Container uses a tiny trap_handler function, to handle docker stop/restart or rclone crashes ( fusermount -uz $MountPoint is applied on SIGTERM or appcrash) on PID 1.
 
 
-Lightweight and simple Container Image (`12MB`) with compiled rclone (https://github.com/ncw/rclone master), to mount your cloudstorage like amazon cloud drive inside a container and make it available to other containers like your Plex Media Server or on your hostsystem (mountpoint on host is shared). You need a working rclone.conf first (from other host). rclone crypt remote can also be used.
-
-
-The Container uses a tiny trap_handler function, to handle docker stop/restart or rclone crashes ( fusermount -u $MountPoint is applied on crash or SIGTERM) on PID 1.
-
-<a name="install-step1"></a>
 # USAGE Example:
 
-    docker run -d --name rclone-mount --restart=unless-stopped --cap-add SYS_ADMIN --device /dev/fuse
-    --security-opt apparmor:unconfined -e RemotePath="mediaefs:" -e MountCommands="--allow-other --allow-non-empty
-    --dir-cache-time 30m" -v /home/USER/.rclone.conf:/config/.rclone.conf -v /mnt/HostMountPoint:/mnt/mediaefs:shared mumiehub/rclone-mount
+    docker run -d --name rclone-mount --restart=unless-stopped --cap-add SYS_ADMIN
+    --device /dev/fuse --security-opt apparmor:unconfined -e RemotePath="mediaefs:"
+    -e MountCommands="--allow-other --allow-non-empty"
+    -v /path/to/config:/config -v /host/mount/point:/mnt/mediaefs:shared
+    mumiehub/rclone-mount
 
 > mendatory commands:
 
@@ -27,8 +25,8 @@ The Container uses a tiny trap_handler function, to handle docker stop/restart o
 
 > needed volume mappings:
 
-- -v /home/USER/.rclone.conf:/config/.rclone.conf
-- -v /mnt/HostMountPoint:/mnt/mediaefs:shared
+- -v /path/to/config:/config
+- -v /host/mount/point:/mnt/mediaefs:shared
 
 # Environment Variables:
 
@@ -36,26 +34,26 @@ The Container uses a tiny trap_handler function, to handle docker stop/restart o
 -e AccessFolder="/mnt"
 "access from other containers with --volumes-from rclone-mount or -v /mnt:/mnt:slave , changes of AccessFolder have no impact because its the exposed folder in the dockerfile, --volumes-from rclone-mount is always /mnt
 
--e RemotePath="mediaefs:"
-"remote name in your rclone config, can be your crypt remote:/path
+-e RemotePath="mediaefs:path"
+"remote name in your rclone config, can be your crypt remote: + path/foo/bar
 
--e MountPoint="/mnt/mediaefs" "INSIDE Container from rclone: needs to match volume mapping -v /mnt/HostMountPoint:/mnt/mediaefs:shared
+-e MountPoint="/mnt/mediaefs" "INSIDE Container: needs to match volume mapping -v /host/mount/point:/mnt/mediaefs:shared
 
--e ConfigDir="/config" "#INSIDE Container: -v /home/USER/.rclone.conf:/config/.rclone.conf
--e ConfigName=".rclone.conf" "#INSIDE Container: -v /home/USER/.rclone.conf:/config/.rclone.conf
+-e ConfigDir="/config" "#INSIDE Container: -v /path/to/config:/config
+-e ConfigName=".rclone.conf" "#INSIDE Container: /config/.rclone.conf
 
--e MountCommands="--allow-other --allow-non-empty --dir-cache-time 30m"
-"default mount commands, (if you not parse any with -e MountCommands=<xxx>, default will be used)
+-e MountCommands="--allow-other --allow-non-empty"
+"default mount commands, (if you not parse anything with -e MountCommands=args, default will be used)
 ```
 
 
 ### Use your own MountCommands with:
-    -e MountCommands="--allow-other --allow-non-empty --dir-cache-time 30m --buffer-size 64M"
+    -e MountCommands="--allow-other --allow-non-empty --dir-cache-time 48h --poll-interval 5m --buffer-size 64M"
 All Commands can be found at: `https://rclone.org/commands/rclone_mount/`.
-Use `--buffer-size 64M` (dont go to high) when you encounter some "Direct Stream" Problems on Plex Media Server (Samsung Smart TV for example).
+Use `--buffer-size 128M` (dont go to high) when you encounter some "Direct Stream" Problems on Plex Media Server (Samsung Smart TV for example).
 
 ## Troubleshooting:
-When you force remove the container, you have to `sudo fusermount -u /mnt/mediaefs` on the hostsystem!
+When you force remove the container, you have to `sudo fusermount -u -z /mnt/mediaefs` on the hostsystem!
 
 
 
@@ -66,7 +64,3 @@ Todo
 * [ ] more specific FAQ and Troubleshooting help
 * [ ] Auto Update Function
 * [ ] launch with specific USER_ID
-
-## License
-
-See [LICENSE](LICENSE)

@@ -6,8 +6,8 @@ MAINTAINER Mumie
 ENV LANG="en_US.UTF-8" \
     LANGUAGE="en_US.UTF-8" \
     USER_NAME="abc" \
-    PUID=1003\
-    PGID=1003\
+    PUID=1003 \
+    PGID=1003 \
     OPENVPN_USERNAME=**None**  \
     OPENVPN_PASSWORD=**None** \
     OPENVPN_CONFIG_DIR="/etc/openvpn/custom" \
