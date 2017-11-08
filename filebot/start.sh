@@ -5,11 +5,11 @@ function ts {
 }
 #----------------------------------------------------------------------------------------------------
 function initialize_configuration {
-  if [ ! -f $CONFIG_FILE/filebot.conf ]
+  if [ ! -f $CONFIG_DIR/$CONFIG_FILE ]
   then
     echo "$(ts) Creating default filebot.conf in User Dir"
-    cp /files/filebot.conf $CONFIG_DIR/filebot.conf
-    chmod a+w $CONFIG_DIR/filebot.conf
+    cp /files/filebot.conf $CONFIG_DIR/$CONFIG_FILE
+    chmod a+w $CONFIG_DIR/$CONFIG_FILE
   fi
 
   if [ ! -f $CONFIG_DIR/filebot.sh ]
