@@ -1,8 +1,8 @@
 # -------------------------------------------------------------------------------
-# Builds a basic docker alpine image that can run TeamSpeak of a folder
+# Builds a basic docker alpine image that can run TeamSpeak from a folder
 #
 # MAINTAINER: Mumie
-# Updated: January 31th, 2017
+# Updated: Nov 09, 2017
 # -------------------------------------------------------------------------------
 
 FROM alpine
@@ -12,14 +12,15 @@ MAINTAINER Mumie
 ENV USER_NAME="teamspeak" \
     USER_UID="1001" \
     DATA_DIR="/teamspeak" \
-    TS_VERSION="LATEST"
+    TS_VERSION="LATEST" \
+    GLIBC_VERSION=2.26-r0
 
 RUN apk add --no-cache --update bzip2 ca-certificates openssl python3 \
     && wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://raw.githubusercontent.com/sgerrand/alpine-pkg-glibc/master/sgerrand.rsa.pub \
 #    && apk add --no-cache -X http://apkproxy.heroku.com/andyshinn/alpine-pkg-glibc glibc glibc-bin \
 #   apkproxy.heroku.com/andyshinn proxy broken
-    && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.25-r0/glibc-2.25-r0.apk \
-    && apk add glibc-2.25-r0.apk \
+    && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-${GLIBC_VERSION}.apk \
+    && apk add glibc-${GLIBC_VERSION}.apk \
     && adduser -D -u ${USER_UID} -s /bin/false $USER_NAME \
     && apk del openssl ca-certificates \
     && rm -rf /tmp/* /var/cache/apk/* /var/lib/apk/lists/*
