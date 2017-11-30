@@ -19,7 +19,7 @@ ENV LANG="en_US.UTF-8" \
 
 # Update packages and install software
 RUN apt-get update \
-    && apt-get -y install software-properties-common \
+    && apt-get -y install software-properties-common nano \
     && add-apt-repository ppa:jcfp/ppa \
     && add-apt-repository ppa:jcfp/sab-addons \
     && apt-get update \
