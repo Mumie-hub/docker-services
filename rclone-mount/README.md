@@ -10,15 +10,21 @@ Lightweight and simple Container Image (`38MB`) with compiled rclone (https://gi
 The Container uses a tiny trap_handler function, to handle docker stop/restart or rclone crashes ( fusermount -uz $MountPoint is applied on SIGTERM or appcrash) on PID 1.
 
 
-# USAGE Example:
+# Usage Example:
 
-    docker run -d --name rclone-mount --restart=unless-stopped --cap-add SYS_ADMIN
-    --device /dev/fuse --security-opt apparmor:unconfined -e RemotePath="mediaefs:"
-    -e MountCommands="--allow-other --allow-non-empty"
-    -v /path/to/config:/config -v /host/mount/point:/mnt/mediaefs:shared
-    mumiehub/rclone-mount
+    docker run -d \
+      --name rclone-mount \
+      --restart=unless-stopped \
+      --cap-add SYS_ADMIN \
+      --device /dev/fuse \
+      --security-opt apparmor:unconfined \
+      -e RemotePath="mediaefs:" \
+      -e MountCommands="--allow-other --allow-non-empty" \
+      -v /path/to/config:/config \
+      -v /host/mount/point:/mnt/mediaefs:shared \
+      mumiehub/rclone-mount
 
-> mendatory commands:
+> mandatory commands:
 
 - --cap-add SYS_ADMIN --device /dev/fuse --security-opt apparmor:unconfined
 
