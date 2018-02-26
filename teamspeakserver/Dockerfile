@@ -7,13 +7,13 @@
 
 FROM alpine
 
-MAINTAINER Mumie
+#MAINTAINER Mumie
 
 ENV USER_NAME="teamspeak" \
     USER_UID="1001" \
     DATA_DIR="/teamspeak" \
     TS_VERSION="LATEST" \
-    GLIBC_VERSION=2.26-r0
+    GLIBC_VERSION=2.27-r0
 
 RUN apk add --no-cache --update bzip2 ca-certificates openssl python3 \
     && wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://raw.githubusercontent.com/sgerrand/alpine-pkg-glibc/master/sgerrand.rsa.pub \
@@ -22,7 +22,7 @@ RUN apk add --no-cache --update bzip2 ca-certificates openssl python3 \
     && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-${GLIBC_VERSION}.apk \
     && apk add glibc-${GLIBC_VERSION}.apk \
     && adduser -D -u ${USER_UID} -s /bin/false $USER_NAME \
-    && apk del openssl ca-certificates \
+    && apk del openssl \
     && rm -rf /tmp/* /var/cache/apk/* /var/lib/apk/lists/*
 
 ADD start.sh /start.sh
