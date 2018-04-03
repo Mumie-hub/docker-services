@@ -1,23 +1,20 @@
 
 FROM ubuntu:latest
 
-MAINTAINER Mumie
-
 ENV LANG="en_US.UTF-8" \
     LANGUAGE="en_US.UTF-8" \
     USER_NAME="abc" \
     PUID=1003 \
     PGID=1003 \
-    OPENVPN_USERNAME=**None**  \
-    OPENVPN_PASSWORD=**None** \
+#    OPENVPN_USERNAME="" \
+#    OPENVPN_PASSWORD="" \
     OPENVPN_CONFIG_DIR="/etc/openvpn/custom" \
     OPENVPN_CONFIG="default.ovpn" \
     SABNZBD_CONFIG_DIR="/config" \
     DOWNLOAD_DIR="/tmp/media/downloads" \
     INCOMPLETE_DIR="/tmp/media/incomplete" \
-    WATCH_DIR=
+    WATCH_DIR=""
 
-# Update packages and install software
 RUN apt-get update \
     && apt-get -y install software-properties-common nano \
     && add-apt-repository ppa:jcfp/ppa \
@@ -33,7 +30,8 @@ RUN apt-get update \
     && mkdir -p /home/${USER_NAME} \
     && useradd -u ${PUID} -U -d /home/${USER_NAME} -s /bin/false ${USER_NAME} \
     && usermod -G users ${USER_NAME}
-    # needs to be fixed no service for sabnzbd and no root
+
+    # deprecated and modified from other github repo
     #&& printf "USER=root\nHOST=0.0.0.0\nPORT=8080\nCONFIG=/config\n" > /etc/default/sabnzbdplus \
     #&& /etc/init.d/sabnzbdplus start
 
@@ -43,7 +41,7 @@ RUN chmod +x /etc/openvpn/start.sh \
     && chmod +x /scripts/*.sh
 
 VOLUME $DOWNLOAD_DIR
-VOLUME /config
+#VOLUME /config
 
 EXPOSE 8080 8090
 

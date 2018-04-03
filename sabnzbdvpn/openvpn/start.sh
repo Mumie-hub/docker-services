@@ -2,18 +2,19 @@
 
 #. /etc/profile
 
-# add OpenVPN user/pass
-if [ "${OPENVPN_USERNAME}" = "**None**" ] || [ "${OPENVPN_PASSWORD}" = "**None**" ] ; then
- echo "OpenVPN credentials not set. Is this right?. In case of using Custom Config"
-else
-  echo "Setting OPENVPN credentials..."
-  echo $OPENVPN_USERNAME > /etc/openvpn/custom/openvpn-credentials.txt
-  echo $OPENVPN_PASSWORD >> /etc/openvpn/custom/openvpn-credentials.txt
-  chmod 600 /etc/openvpn/custom/openvpn-credentials.txt
-fi
+# add OpenVPN user/pass deprecated
+#if [ "${OPENVPN_USERNAME}" = "" ] || [ "${OPENVPN_PASSWORD}" = "" ] ; then
+# echo "OpenVPN credentials not set. No credentials.txt will be created"
+#else
+#  echo "Setting OPENVPN credentials.txt ..."
+#  echo $OPENVPN_USERNAME > /etc/openvpn/custom/openvpn-credentials.txt
+#  echo $OPENVPN_PASSWORD >> /etc/openvpn/custom/openvpn-credentials.txt
+#  chmod 600 /etc/openvpn/custom/openvpn-credentials.txt
+#fi
 
 #dockerize -template /etc/transmission/environment-variables.tmpl:/etc/transmission/environment-variables.sh /bin/true
 
+#set routing gateway for the container
 if [ -n "${LOCAL_NETWORK-}" ]; then
   eval $(/sbin/ip r l m 0.0.0.0 | awk '{if($5!="tun0"){print "GW="$3"\nINT="$5; exit}}')
   if [ -n "${GW-}" -a -n "${INT-}" ]; then
@@ -25,7 +26,6 @@ fi
 . /scripts/userSetup.sh
 
 CONTROL_OPTS="--script-security 2 --up /scripts/start.sh --down /scripts/stop.sh"
-
 OPENVPN_CONFIG_PATH="$OPENVPN_CONFIG_DIR/$OPENVPN_CONFIG"
 
 #printf "USER=${USER_NAME}\nHOST=0.0.0.0\nPORT=8080\nCONFIG=${SABNZBD_CONFIG_DIR}\n" > /etc/default/sabnzbdplus \
