@@ -2,15 +2,13 @@
 Docker container which runs SABnzbd while connected to OpenVPN.
 
 ## Run container from Docker registry
-The container is available from the Docker registry.
-To run the container use this command:
+To run the container use this command for example:
 
 ```
-$ docker run -d --name CONTAINER_NAME \
-              -v /your/storage/path/:/data \
+docker run -d --name sabnzbd_vpn \
+              -v /your/storage/path:/data \
               -v /path/to/ovpn-file:/etc/openvpn/custom
               -v /etc/localtime:/etc/localtime:ro \
-              -e "OPENVPN_PROVIDER=CUSTOM" \
               -e "LOCAL_NETWORK=192.168.0.0/24" \
               -p 8080:8080 \
               mumie/sabnzbdvpn
@@ -21,14 +19,14 @@ $ docker run -d --name CONTAINER_NAME \
 ### Required environment options passed with -e
 | Variable | Function | Notes |
 |----------|----------|----------|
-|`OPENVPN_CONFIG_DIR` | Sets the OpenVPN config dir. | `test`. and their config values are listed in the table above. |
-|`OPENVPN_CONFIG`|Your OpenVPN config filename | Default name is `default.ovpn`|
-|`SABNZBD_CONFIG_DIR`|Your SABnzbd data dir | inside the Container. at /config, `needs to match hostmountpoint`|
-|`DOWNLOAD_DIR`|SABnzbd download dir|inside the Container. This is where SABnzbd will store your downloads and incomplete downloads|
-|`INCOMPLETE_DIR`|SABnzbd incomplete dir|inside the Container. This is where SABnzbd will store your downloads and incomplete downloads|
+|`OPENVPN_CONFIG_DIR` |OpenVPN config dir. | Default is `"/etc/openvpn/custom"` needs to match mappings. |
+|`OPENVPN_CONFIG`|OpenVPN config filename | Default name is `default.ovpn`|
+|`SABNZBD_CONFIG_DIR`|SABnzbd data dir |#inside Container. default `"/config"`, needs to match hostmountpoint|
+|`DOWNLOAD_DIR`|SABnzbd download dir|#inside Container. This is where SABnzbd will store your downloads. Default `"/tmp/media/downloads"`|
+|`INCOMPLETE_DIR`|SABnzbd incomplete dir|inside the Container. This is where SABnzbd will store your incomplete downloads|
 
 
-#### Network configuration options
+### Network configuration options
 | Variable | Function | Example |
 |----------|----------|---------|
 |`OPENVPN_OPTS` | Will be passed to OpenVPN on startup | See [OpenVPN doc](https://openvpn.net/index.php/open-source/documentation/manuals/65-openvpn-20x-manpage.html) |
@@ -41,18 +39,17 @@ By default OpenVPN will run as the root user and SABnzbd will run as user abc `1
 
 | Variable | Function | Example |
 |----------|----------|-------|
-|`-e PUID` | Sets the user id who will run SABnzbd | `PUID=1003`|
-|`-e PGID` | Sets the group id for the SABnzbd user | `PGID=1003` |
+|`-e PUID` | Sets the user id who will run SABnzbd | Default = `PUID=1003`|
+|`-e PGID` | Sets the group id for the SABnzbd user | Default = `PGID=1003` |
 
 
 ## Access the WebUI of SABnzbd
 
-My http://my-host:8080 isn't responding?
-This is because the VPN is active, and since docker is running in a different subnet than your client the response
-to your request will be treated as "non-local" traffic and therefore be routed out through the VPN interface.
+If you set `LOCAL_NETWORK` correctly, the WebUI of SABnzbd should be at http://containerhost:8080. If its not responding, there might be an error with your 
+`LOCAL_NETWORK` subnet settings.
 
 ### How to fix this:
-The container supports the `LOCAL_NETWORK` environment variable. For instance if your local network uses the IP range 192.168.0.0/24 you would pass `-e LOCAL_NETWORK=192.168.0.0/24`. 
+The container supports the `LOCAL_NETWORK` environment variable. For instance if your local network uses the subnet 192.168.0.0/24 you should pass `-e LOCAL_NETWORK=192.168.0.0/24`. It must match your subnet, else your traffic will be "non-local" traffic and therefore be routed out through the VPN interface.
 
 Alternatively you can reverse proxy the traffic through another container, as that container would be in the docker range. 
 
@@ -64,6 +61,14 @@ $ docker run -d \
 ```
 
 ## Tips and Tricks
+
+### Using your ovpn config file
+
+Add a new volume mount to your `docker run` command that mounts your config file:
+
+    -v /path/to/config.ovpn:/etc/openvpn/custom/default.ovpn
+
+If you have an separate ca.crt file your volume mount should be a folder containing both the ca.crt and the .ovpn config.
 
 #### Use Google DNS servers
 Some have encountered problems with DNS resolving inside the docker container.
@@ -78,13 +83,3 @@ If the VPN connection fails or the container for any other reason loses connecti
 
 When your are using a managed network layer for example, the default link mtu of 1500 can be to big. Setting a lower mtu in OpenVPN should help:
 `-e OPENVPN_OPTS --tun-mtu 1300`
-
-
-### Using your ovpn config file
-
-If you want to run the image with your own provider without building a new image, that is also possible. For some providers, like AirVPN, the .ovpn files are generated per user and contains credentials. They should not be added to a public image. This is what you do:
-
-Add a new volume mount to your `docker run` command that mounts your config file:
-`-v /path/to/your/config.ovpn:/etc/openvpn/custom/default.ovpn`
-
-Note that you still need to modify your .ovpn file as described in the previous section. If you have an separate ca.crt file your volume mount should be a folder containing both the ca.crt and the .ovpn config.
