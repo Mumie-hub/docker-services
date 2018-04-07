@@ -1,4 +1,5 @@
 # SABnzbd and OpenVPN
+
 Docker container which runs SABnzbd while connected to OpenVPN.
 
 ## Run container from Docker registry
@@ -6,17 +7,17 @@ To run the container use this command for example:
 
 ```
 docker run -d --name sabnzbd_vpn \
-              -v /your/storage/path:/data \
-              -v /path/to/ovpn-file:/etc/openvpn/custom
-              -v /etc/localtime:/etc/localtime:ro \
-              -e "LOCAL_NETWORK=192.168.0.0/24" \
-              -p 8080:8080 \
-              mumie/sabnzbdvpn
+            -v /your/storage/path:/data \
+            -v /path/to/ovpn-file:/etc/openvpn/custom
+            -v /etc/localtime:/etc/localtime:ro \
+            -e "LOCAL_NETWORK=192.168.0.0/24" \
+            -p 8080:8080 \
+            mumie/sabnzbdvpn
 ```
 
 
 
-### Required environment options passed with -e
+### Environment options passed with docker -e
 | Variable | Function | Notes |
 |----------|----------|----------|
 |`OPENVPN_CONFIG_DIR` |OpenVPN config dir. | Default is `"/etc/openvpn/custom"` needs to match mappings. |

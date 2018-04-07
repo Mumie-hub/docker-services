@@ -4,6 +4,7 @@
 
 Rclone Mount Container
 ---
+
 Lightweight and simple Container Image (`alpine:latest - 44MB`) with compiled rclone (https://github.com/ncw/rclone master). Mount your cloudstorage like amazon cloud drive inside a container and make it available to other containers like your Plex Media Server or on your hostsystem (mountpoint on host is shared). You need a working rclone.conf (from another host or create it inside the container). all rclone remotes can be used.
 
 
@@ -12,8 +13,7 @@ The Container uses a tiny trap_handler function, to handle docker stop/restart o
 
 # Usage Example:
 
-  docker run -d --name rclone-mount \
-        --name rclone-mount \
+    docker run -d --name rclone-mount \
         --restart=unless-stopped \
         --cap-add SYS_ADMIN \
         --device /dev/fuse \
@@ -23,6 +23,7 @@ The Container uses a tiny trap_handler function, to handle docker stop/restart o
         -v /path/to/config:/config \
         -v /host/mount/point:/mnt/mediaefs:shared \
         mumiehub/rclone-mount
+
 
 > mandatory docker commands:
 
@@ -51,6 +52,7 @@ The Container uses a tiny trap_handler function, to handle docker stop/restart o
 ```vim
 -e MountCommands="--allow-other --allow-non-empty --dir-cache-time 48h --poll-interval 5m --buffer-size 128M"
 ```
+
 All Commands can be found at [https://rclone.org/commands/rclone_mount/](https://rclone.org/commands/rclone_mount/). Use `--buffer-size 256M` (dont go to high), when you encounter some "Direct Stream" Problems on Plex Media Server (Samsung Smart TV for example).
 
 ## Troubleshooting:
@@ -62,6 +64,6 @@ Todo
 ----
 
 * [ ] more settings
-* [ ] more specific FAQ and Troubleshooting help
+* [ ] more specific FAQ and Troubleshooting
 * [ ] Auto Update Function
 * [ ] launch with specific USER_ID
