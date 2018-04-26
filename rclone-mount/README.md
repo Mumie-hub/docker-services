@@ -33,7 +33,7 @@ The Container uses a tiny trap_handler function, to handle docker stop/restart o
 > needed volume mappings:
 
 - -v /path/to/config:/config
-- -v /host/mount/point:/mnt/mediaefs`:shared`
+- -v /host/mount/point:/mnt/mediaefs:shared
 
 
 # Environment Variables:
@@ -42,9 +42,9 @@ The Container uses a tiny trap_handler function, to handle docker stop/restart o
 |---|--------|----|
 |`RemotePath`="mediaefs:path" | |remote name in your rclone config, can be your crypt remote: + path/foo/bar|
 |`MountPoint`="/mnt/mediaefs"| |#INSIDE Container: needs to match mapping -v /host/mount/point:`/mnt/mediaefs:shared`|
-|`ConfigDir`="/config"| |#INSIDE Container: -v /path/to/config:`/config`|
-|`ConfigName`=".rclone.conf"| |#INSIDE Container: /config/`.rclone.conf`|
-|`MountCommands`="--allow-other --allow-non-empty"| |"default mount commands, (if you not parse anything with, defaults will be used)|
+|`ConfigDir`="/config"| |#INSIDE Container: -v /path/to/config:/config|
+|`ConfigName`=".rclone.conf"| |#INSIDE Container: /config/.rclone.conf|
+|`MountCommands`="--allow-other --allow-non-empty"| |"default mount commands, (if you not parse anything, defaults will be used)|
 |`AccessFolder`="/mnt" ||access with --volumes-from rclone-mount, changes of AccessFolder have no impact because its the exposed folder in the dockerfile.|
 
 
