@@ -8,9 +8,23 @@ SMB Mount Container based on `alpine:latest`
 
 Lightweight and simple alpine Container Image with cifs-utils installed.
 
+
+# Usage Example:
+
+    docker run -d --name smb-mount \
+        --restart=unless-stopped \
+        --cap-add SYS_ADMIN \
+        --cap-add DAC_READ_SEARCH \
+        --security-opt apparmor:unconfined \
+        -e SERVERPATH="//exampleserver/folder" \
+        -e MOUNTOPTIONS="vers=3.02,uid=1000,gid=1000,rw,username=example,password=123example" \
+        -v /mnt/HostMountPoint:/mnt/smb:shared \
+        mumiehub/smb-mount
+
+
 # USAGE Example:
 
-    docker run -d --name smb-mount --restart=unless-stopped --cap-add SYS_ADMIN --cap-add DAC_READ_SEARCH --security-opt apparmor:unconfined -e SERVERPATH="//exampleserverIP/example" -v /mnt/HostMountPoint:/mnt/smb:shared mumiehub/smb-mount
+    docker run -d --name smb-mount --restart=unless-stopped --cap-add SYS_ADMIN --cap-add DAC_READ_SEARCH --security-opt apparmor:unconfined -e SERVERPATH="//exampleserver/folder" -e MOUNTOPTIONS="vers=3.02,uid=1000,gid=1000,rw,username=example,password=123example" -v /mnt/HostMountPoint:/mnt/smb:shared mumiehub/smb-mount
 
 > mendatory commands:
 
@@ -28,17 +42,21 @@ Lightweight and simple alpine Container Image with cifs-utils installed.
 "access test
 
 -e SERVERPATH="//192.168.1.1/example"
-"remote SMB Server Path
+"SMB Server Hostname or IP
 
--e MountPoint="/mnt/smb" "INSIDE Container: needs to match volume mapping -v /mnt/HostMountPoint:/mnt/smb:shared
+-e MOUNTPOINT="/mnt/smb" "INSIDE Container: needs to match volume mapping -v /mnt/HostMountPoint:/mnt/smb:shared
 
--e MountCommands=""
-"default is empty
+-e MOUNTOPTIONS="vers=3.02,uid=1000,gid=1000,rw,username=exaple,password=123example"
+"Mount Commands with Username and Password
+
+-e UMOUNTOPTIONS="-a -t cifs -l"
 ```
 
 
 ## Troubleshooting:
 When you force remove the container, you have to `sudo umount /mnt/smb` on the hostsystem!
+
+Mounting Windows Server 2016 SMB share works with `MOUNTOPTIONS="vers=3.02"`!
 
 
 
