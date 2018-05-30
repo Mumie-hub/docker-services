@@ -29,13 +29,9 @@ function fuse_unmount {
 # SIGHUP is for cache clearing
 trap term_handler SIGINT SIGTERM
 
-while true
-do
-  /usr/sbin/rclone --config $ConfigPath mount $RemotePath $MountPoint $MountCommands & wait ${!}
-  echo "rclone crashed at: $(date +%Y.%m.%d-%T)"
-#  tail -f /dev/null & wait ${!}
-  fuse_unmount
-#  sleep 1
-done
-
-exit 144
+/usr/sbin/rclone -v --config $ConfigPath mount $RemotePath $MountPoint $MountCommands & wait ${!}
+ls /config
+exit_code=$?
+echo "rclone crashed at: $(date +%Y.%m.%d-%T)"
+fuse_unmount
+exit "$exit_code"
