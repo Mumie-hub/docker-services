@@ -1,5 +1,0 @@
-data/*
-rclone-config
-docker-compose.yml
-pyload-config/*
-.gitignore
