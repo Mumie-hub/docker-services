@@ -5,37 +5,36 @@ mkdir -p $ConfigDir
 
 ConfigPath="$ConfigDir/$ConfigName"
 
-echo "============================================="
-echo "Mounting $RemotePath to $MountPoint at $(date +%Y.%m.%d-%T)"
+echo "=================================================="
+echo "Mounting $RemotePath to $MountPoint at: $(date +%Y.%m.%d-%T)"
 
 #export EnvVariable
 
 function term_handler {
-  kill -SIGTERM ${!} #kill last spawned background process
   echo "sending SIGTERM to child pid"
-#  kill -SIGTERM "$pid_rclone"
-#  wait "$pid_rclone"
+  kill -SIGTERM ${!}      #kill last spawned background process $(pidof rclone)
   fuse_unmount
-  echo "exiting now"
-#  kill $(jobs -p)
+  echo "exiting container now"
   exit $?
 }
 
-function fuse_unmount {
-  echo "Unmounting: fusermount -u $MountPoint $(date +%Y.%m.%d-%T)"
-  fusermount -u -z $MountPoint
+function cache_handler {
+  echo "sending SIGHUP to child pid"
+  kill -SIGHUP ${!}
 }
 
-# SIGHUP is for cache clearing
+function fuse_unmount {
+  echo "Unmounting: fusermount $UnmountCommands $MountPoint at: $(date +%Y.%m.%d-%T)"
+  fusermount $UnmountCommands $MountPoint
+}
+
+#traps, SIGHUP is for cache clearing
 trap term_handler SIGINT SIGTERM
+trap cache_handler SIGHUP
 
-while true
-do
-  /usr/sbin/rclone --config $ConfigPath mount $RemotePath $MountPoint $MountCommands & wait ${!}
-  echo "rclone crashed at: $(date +%Y.%m.%d-%T)"
-#  tail -f /dev/null & wait ${!}
-  fuse_unmount
-#  sleep 1
-done
+#mount rclone remote and wait
+/usr/sbin/rclone --config $ConfigPath mount $RemotePath $MountPoint $MountCommands & wait ${!}
+echo "rclone crashed at: $(date +%Y.%m.%d-%T)"
+fuse_unmount
 
-exit 144
+exit $?

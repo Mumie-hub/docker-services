@@ -1,5 +1,4 @@
 FROM alpine
-MAINTAINER Mumie
 
 ENV GOPATH="/go" \
     AccessFolder="/mnt" \
@@ -7,7 +6,8 @@ ENV GOPATH="/go" \
     MountPoint="/mnt/mediaefs" \
     ConfigDir="/config" \
     ConfigName=".rclone.conf" \
-    MountCommands="--allow-other --allow-non-empty"
+    MountCommands="--allow-other --allow-non-empty" \
+    UnmountCommands="-u -z"
 
 ## Alpine with Go Git
 RUN apk add --no-cache --update alpine-sdk ca-certificates go git fuse fuse-dev \
@@ -24,7 +24,7 @@ VOLUME [$AccessFolder]
 
 CMD ["/start.sh"]
 
-# Use this args in docker run
+# Use this docker Options in run
 # --cap-add SYS_ADMIN --device /dev/fuse --security-opt apparmor:unconfined
 # -v /path/to/config/.rclone.conf:/config/.rclone.conf
 # -v /mnt/mediaefs:/mnt/mediaefs:shared

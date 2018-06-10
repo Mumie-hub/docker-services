@@ -8,7 +8,7 @@ Rclone Mount Container
 Lightweight and simple Container Image (`alpine:latest - 44MB`) with compiled rclone (https://github.com/ncw/rclone master). Mount your cloudstorage like amazon cloud drive inside a container and make it available to other containers like your Plex Media Server or on your hostsystem (mountpoint on host is shared). You need a working rclone.conf (from another host or create it inside the container). all rclone remotes can be used.
 
 
-The Container uses a tiny trap_handler function, to handle docker stop/restart or rclone crashes ( fusermount -uz $MountPoint is applied on SIGTERM or appcrash) on PID 1.
+The Container uses a tiny trap function, to handle docker stop/restart ( fusermount -uz $MountPoint is applied on SIGTERM signal or app crashes also) on PID 1.
 
 
 # Usage Example:
@@ -44,7 +44,8 @@ The Container uses a tiny trap_handler function, to handle docker stop/restart o
 |`MountPoint`="/mnt/mediaefs"| |#INSIDE Container: needs to match mapping -v /host/mount/point:`/mnt/mediaefs:shared`|
 |`ConfigDir`="/config"| |#INSIDE Container: -v /path/to/config:/config|
 |`ConfigName`=".rclone.conf"| |#INSIDE Container: /config/.rclone.conf|
-|`MountCommands`="--allow-other --allow-non-empty"| |"default mount commands, (if you not parse anything, defaults will be used)|
+|`MountCommands`="--allow-other --allow-non-empty"| |default mount commands, (if you not parse anything, defaults will be used)|
+|`UnmountCommands`="-u -z"| |default unmount commands|
 |`AccessFolder`="/mnt" ||access with --volumes-from rclone-mount, changes of AccessFolder have no impact because its the exposed folder in the dockerfile.|
 
 
