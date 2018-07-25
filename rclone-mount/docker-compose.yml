@@ -1,0 +1,24 @@
+version: '3.4'
+services:
+  rclone:
+    container_name: rclone
+    image: mumiehub/rclone-mount
+    restart: unless-stopped
+    cap_add:
+      - SYS_ADMIN
+    devices:
+      - /dev/fuse
+    security_opt:
+      - apparmor:unconfined
+    environment:
+      - RemotePath=remote.folder/folder
+      - MountCommands=--allow-other --allow-non-empty
+      - AccessFolder=/data
+      - MountPoint=/data
+      - ConfigName=.rclone.conf
+    volumes:
+      - /mnt/remote:/data:shared
+      - rclone.config:/config
+      
+volumes:
+  rclone.config:
