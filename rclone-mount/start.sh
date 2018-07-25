@@ -34,6 +34,8 @@ trap cache_handler SIGHUP
 
 #mount rclone remote and wait
 /usr/sbin/rclone --config $ConfigPath mount $RemotePath $MountPoint $MountCommands & wait ${!}
+
+echo "mount command was: /usr/sbin/rclone --config $ConfigPath mount $RemotePath $MountPoint $MountCommands & wait ${!}"
 echo "rclone crashed at: $(date +%Y.%m.%d-%T)"
 fuse_unmount
 
