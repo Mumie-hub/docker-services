@@ -21,6 +21,7 @@ function term_handler {
 function cache_handler {
   echo "sending SIGHUP to child pid"
   kill -SIGHUP ${!}
+  wait ${!}
 }
 
 function fuse_unmount {
@@ -33,7 +34,8 @@ trap term_handler SIGINT SIGTERM
 trap cache_handler SIGHUP
 
 #mount rclone remote and wait
-/usr/sbin/rclone --config $ConfigPath mount $RemotePath $MountPoint $MountCommands & wait ${!}
+/usr/sbin/rclone --config $ConfigPath mount $RemotePath $MountPoint $MountCommands &
+wait ${!}
 echo "rclone crashed at: $(date +%Y.%m.%d-%T)"
 fuse_unmount
 

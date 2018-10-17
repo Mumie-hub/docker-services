@@ -20,7 +20,7 @@ RUN apk add --no-cache --update alpine-sdk ca-certificates go git fuse fuse-dev 
 ADD start.sh /start.sh
 RUN chmod +x /start.sh 
 
-VOLUME [$AccessFolder]
+VOLUME ["/mnt"]
 
 CMD ["/start.sh"]
 
