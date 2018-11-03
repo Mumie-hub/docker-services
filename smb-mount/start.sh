@@ -1,13 +1,13 @@
 #!/bin/sh
 
 echo "============================================="
-echo "Mounting SMB from $SERVERPATH to $MOUNTPOINT at $(date +%Y.%m.%d-%T)"
+echo "Mounting SMB $SERVERPATH to $MOUNTPOINT at $(date +%Y.%m.%d-%T)"
 
 #export EnvVariable
 
 function term_handler {
   unmount_smb
-  echo "exiting now"
+  echo "exiting container now"
   exit 0
 }
 
@@ -24,7 +24,14 @@ mount -t cifs -o $MOUNTOPTIONS $SERVERPATH $MOUNTPOINT
 
 while true
 do
-sleep 10
+  if grep -qs "$MOUNTPOINT" /proc/mounts; then
+    sleep 120
+    #echo "sleep"
+  else
+    echo "Error mounting $SERVERPATH $(date +%Y.%m.%d-%T)"
+    sleep 5
+    exit 144
+  fi
 done
 
-exit 144
+exit 145

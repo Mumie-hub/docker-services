@@ -1,5 +1,5 @@
 FROM alpine
-MAINTAINER Mumie
+#MAINTAINER Mumie
 
 ENV SERVERPATH="//192.168.1.1/example" \
     MOUNTPOINT="/mnt/smb" \
@@ -15,7 +15,7 @@ RUN apk add --no-cache --update cifs-utils \
 ADD start.sh /start.sh
 RUN chmod +x /start.sh
 
-VOLUME [$AccessFolder]
+#VOLUME ["/mnt"]
 
 CMD ["/start.sh"]
 
