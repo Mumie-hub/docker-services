@@ -1,25 +1,24 @@
 FROM alpine
 
-MAINTAINER Mumie
-
 ENV USER_UID="1002" \
     USER_NAME="jdownloader" \
     JDOWNLOADER_LINK="http://installer.jdownloader.org/JDownloader.jar"
     
 ENV JAVA_VERSION=8 \
-    JAVA_VERSION_MINOR=131 \
-    JAVA_VERSION_BUILD=11 \
+    JAVA_VERSION_MINOR=191 \
+    JAVA_VERSION_BUILD=12 \
     JAVA_PACKAGE=server-jre \
+    JAVA_MAGIC=2787e4a523244c269598db4e85c51e0c \
     JAVA_HOME=/opt/jdk \
     PATH=${PATH}:/opt/jdk/bin \
-    GLIBC_VERSION=2.27-r0 \
+    GLIBC_VERSION=2.28-r0 \
     LANG=C.UTF-8
 
 # alpine - openjdk8-jre-base java-jna openjdk8-jre-lib libstdc++  glibc-bin glibc-i18n
 # libstdc++ and glibc-i18n needed for jdownloader building 7zip Package
 RUN set -ex \
     && apk add --no-cache --update wget bash ca-certificates su-exec curl libstdc++ \
-    && wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://raw.githubusercontent.com/sgerrand/alpine-pkg-glibc/master/sgerrand.rsa.pub \
+    && wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
 #    && apk add --no-cache -X https://apkproxy.heroku.com/andyshinn/alpine-pkg-glibc glibc glibc-i18n \
 #   apkproxy.heroku.com/andyshinn proxy broken
 
@@ -34,7 +33,7 @@ RUN set -ex \
     # Downloading Oracle Java Server-Jre
     && mkdir /opt \
     && curl -jksSLH "Cookie: oraclelicense=accept-securebackup-cookie" -o /tmp/java.tar.gz \
-        http://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION}u${JAVA_VERSION_MINOR}-b${JAVA_VERSION_BUILD}/d54c1d3a095b4ff2b6607d096fa80163/${JAVA_PACKAGE}-${JAVA_VERSION}u${JAVA_VERSION_MINOR}-linux-x64.tar.gz \
+    http://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION}u${JAVA_VERSION_MINOR}-b${JAVA_VERSION_BUILD}/${JAVA_MAGIC}/${JAVA_PACKAGE}-${JAVA_VERSION}u${JAVA_VERSION_MINOR}-linux-x64.tar.gz \
     && tar -C /opt -zxvf /tmp/java.tar.gz \
     && ln -s /opt/jdk1.${JAVA_VERSION}.0_${JAVA_VERSION_MINOR} /opt/jdk \
     && find /opt/jdk/ -maxdepth 1 -mindepth 1 | grep -v jre | xargs rm -rf \
