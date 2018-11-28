@@ -1,4 +1,3 @@
-
 FROM ubuntu:latest
 
 ENV LANG="en_US.UTF-8" \
@@ -22,7 +21,7 @@ RUN apt-get update \
     && apt-get update \
     && apt-get install -y openvpn curl sudo sabnzbdplus wget par2-tbb python-sabyenc p7zip-full locales \
     && locale-gen en_US.UTF-8 \
-    && curl -sLO https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64.deb \
+    && curl -sLO https://github.com/Yelp/dumb-init/releases/download/v1.2.2/dumb-init_1.2.2_amd64.deb \
     && dpkg -i dumb-init_*.deb \
     && rm -rf dumb-init_*.deb \
     && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
