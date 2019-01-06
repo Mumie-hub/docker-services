@@ -29,4 +29,4 @@ CMD ["/start.sh"]
 # Use this docker Options in run
 # --cap-add SYS_ADMIN --device /dev/fuse --security-opt apparmor:unconfined
 # -v /path/to/config/.rclone.conf:/config/.rclone.conf
-# -v /mnt/mediaefs:/mnt/mediaefs:shared
+# -v /mnt/mediaefs:/mnt/mediaefs:shared 
