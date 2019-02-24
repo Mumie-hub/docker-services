@@ -1,24 +1,19 @@
 # -------------------------------------------------------------------------------
 # Builds a basic docker alpine image that can run TeamSpeak from a folder
 #
-# MAINTAINER: Mumie
 # Updated: Nov 09, 2017
 # -------------------------------------------------------------------------------
 
 FROM alpine
 
-#MAINTAINER Mumie
-
 ENV USER_NAME="teamspeak" \
     USER_UID="1001" \
     DATA_DIR="/teamspeak" \
     TS_VERSION="LATEST" \
-    GLIBC_VERSION=2.27-r0
+    GLIBC_VERSION=2.28-r0
 
 RUN apk add --no-cache --update bzip2 ca-certificates openssl python3 \
-    && wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://raw.githubusercontent.com/sgerrand/alpine-pkg-glibc/master/sgerrand.rsa.pub \
-#    && apk add --no-cache -X http://apkproxy.heroku.com/andyshinn/alpine-pkg-glibc glibc glibc-bin \
-#   apkproxy.heroku.com/andyshinn proxy broken
+    && wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
     && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-${GLIBC_VERSION}.apk \
     && apk add glibc-${GLIBC_VERSION}.apk \
     && adduser -D -u ${USER_UID} -s /bin/false $USER_NAME \

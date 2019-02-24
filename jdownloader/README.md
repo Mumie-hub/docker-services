@@ -11,7 +11,7 @@ add:
 {
 "serverhost" : "api.jdownloader.org",
 "email" : "youremailadress",
-"password" : "yourpassword",
+"password" : "yourpassword"
 }
 
 (dont forget the , on each end of entrys except the last entry)
