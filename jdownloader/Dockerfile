@@ -5,10 +5,10 @@ ENV USER_UID="1002" \
     JDOWNLOADER_LINK="http://installer.jdownloader.org/JDownloader.jar"
     
 ENV JAVA_VERSION=8 \
-    JAVA_VERSION_MINOR=191 \
-    JAVA_VERSION_BUILD=12 \
+    JAVA_VERSION_MINOR=201 \
+    JAVA_VERSION_BUILD=09 \
     JAVA_PACKAGE=server-jre \
-    JAVA_MAGIC=2787e4a523244c269598db4e85c51e0c \
+    JAVA_MAGIC=42970487e3af4f5aa5bca3f542482c60 \
     JAVA_HOME=/opt/jdk \
     PATH=${PATH}:/opt/jdk/bin \
     GLIBC_VERSION=2.29-r0 \
@@ -17,7 +17,7 @@ ENV JAVA_VERSION=8 \
 # alpine - openjdk8-jre-base java-jna openjdk8-jre-lib libstdc++  glibc-bin glibc-i18n
 # libstdc++ and glibc-i18n needed for jdownloader building 7zip Package
 RUN set -ex \
-    && apk add --no-cache --update wget bash ca-certificates su-exec curl libstdc++ \
+    && apk add --no-cache --update wget bash ca-certificates su-exec curl libstdc++ tar \
     && wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
     && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-${GLIBC_VERSION}.apk \
     && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-bin-${GLIBC_VERSION}.apk \
@@ -40,9 +40,7 @@ RUN set -ex \
     && adduser -D -u ${USER_UID} -G ${USER_NAME} -s /bin/sh -h /${USER_NAME} ${USER_NAME} \
     && echo "Downloading jDownloader jar File" \
     && wget -O /${USER_NAME}/JDownloader.jar --progress=bar:force ${JDOWNLOADER_LINK} \
-
-#    && apk del wget ca-certificates curl glibc-i18n \
-    && apk del wget ca-certificates curl \
+    && apk del wget ca-certificates curl tar \
     && rm -rf /tmp/* /var/cache/apk/* /var/lib/apk/lists/*
 
 ADD start.sh /start.sh
