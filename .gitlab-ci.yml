@@ -3,20 +3,23 @@
 variables:
 #  REGISTRY: registry.example.com
 #  REGISTRY_NAME: mumie
-  REGISTRY_PATH: $CI_REGISTRY/$CI_PROJECT_PATH
-  LATEST_VER: mumie/app:latest
-  MAJOR_VER: mumie/app:2
+  REPO1: rclone-mount
+  REPO2: smb-mount
+  REPO3: jdownloader
+  REGPATH: $CI_REGISTRY/$CI_PROJECT_PATH
+#  LATEST_VER: mumie/app:latest
+#  MAJOR_VER: mumie/app:2
 
 stages:
   - build
   - test
 
 before_script:
-  - echo "starting new job"
-#  - docker info
+  - echo "starting new job in $REGPATH"
+  - docker info
 #  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
-docker_build_rclone_dev:
+docker_build_repo1:
   stage: build
   image: docker:latest
   services:
@@ -24,38 +27,39 @@ docker_build_rclone_dev:
   script:
   - echo "$CI_PROJECT_PATH"
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-  - docker pull $REGISTRY_PATH/rclone-mount:$CI_COMMIT_REF_SLUG || true
-  - docker build --pull --cache-from $REGISTRY_PATH/rclone-mount:$CI_COMMIT_REF_SLUG -t $REGISTRY_PATH/rclone-mount:$CI_COMMIT_SHA -t $REGISTRY_PATH/rclone-mount:$CI_COMMIT_REF_SLUG ./rclone-mount
-  - docker push $REGISTRY_PATH/rclone-mount:$CI_COMMIT_SHA
-  - docker push $REGISTRY_PATH/rclone-mount:$CI_COMMIT_REF_SLUG
+  - docker pull $REGPATH/$REPO1:$CI_COMMIT_REF_SLUG || true
+  - docker build --pull -t $REGPATH/$REPO1:$CI_COMMIT_SHA -t $REGPATH/$REPO1:$CI_COMMIT_REF_SLUG ./$REPO1
+  - docker push $REGPATH/$REPO1:$CI_COMMIT_SHA
+  - docker push $REGPATH/$REPO1:$CI_COMMIT_REF_SLUG
   only:
   - dev
+  - master
 
-docker_build_smb_dev:
+docker_build_repo2:
   stage: build
   image: docker:latest
   services:
   - docker:dind
   script:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-  - docker pull $REGISTRY_PATH/smb-mount:$CI_COMMIT_REF_SLUG || true
-  - docker build --pull --cache-from $REGISTRY_PATH/smb-mount:$CI_COMMIT_REF_SLUG -t $REGISTRY_PATH/smb-mount:$CI_COMMIT_SHA -t $REGISTRY_PATH/smb-mount:$CI_COMMIT_REF_SLUG ./smb-mount
-  - docker push $REGISTRY_PATH/smb-mount:$CI_COMMIT_SHA
-  - docker push $REGISTRY_PATH/smb-mount:$CI_COMMIT_REF_SLUG
+  - docker pull $REGPATH/$REPO2:$CI_COMMIT_REF_SLUG || true
+  - docker build --pull --cache-from $REGPATH/$REPO2:$CI_COMMIT_REF_SLUG -t $REGPATH/$REPO2:$CI_COMMIT_SHA -t $REGPATH/$REPO2:$CI_COMMIT_REF_SLUG ./$REPO2
+  - docker push $REGPATH/$REPO2:$CI_COMMIT_SHA
+  - docker push $REGPATH/$REPO2:$CI_COMMIT_REF_SLUG
   only:
   - dev
 
-docker_build_jdownloader_dev:
+docker_build_repo3:
   stage: build
   image: docker:latest
   services:
   - docker:dind
   script:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-  - docker pull $REGISTRY_PATH/jdownloader:$CI_COMMIT_REF_SLUG || true
-  - docker build --pull --cache-from $REGISTRY_PATH/jdownloader:$CI_COMMIT_REF_SLUG -t $REGISTRY_PATH/jdownloader:$CI_COMMIT_SHA -t $REGISTRY_PATH/jdownloader:$CI_COMMIT_REF_SLUG ./jdownloader
-  - docker push $REGISTRY_PATH/jdownloader:$CI_COMMIT_SHA
-  - docker push $REGISTRY_PATH/jdownloader:$CI_COMMIT_REF_SLUG
+  - docker pull $REGPATH/$REPO3:$CI_COMMIT_REF_SLUG || true
+  - docker build --pull --cache-from $REGPATH/$REPO3:$CI_COMMIT_REF_SLUG -t $REGPATH/$REPO3:$CI_COMMIT_SHA -t $REGPATH/$REPO3:$CI_COMMIT_REF_SLUG ./$REPO3
+  - docker push $REGPATH/$REPO3:$CI_COMMIT_SHA
+  - docker push $REGPATH/$REPO3:$CI_COMMIT_REF_SLUG
   only:
   - dev
 
