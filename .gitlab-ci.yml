@@ -15,7 +15,7 @@ stages:
   - test
 
 before_script:
-  - echo "starting new job"
+  - echo "starting new job in $REGPATH"
   - docker info
 #  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
@@ -28,7 +28,7 @@ docker_build_repo1:
   - echo "$CI_PROJECT_PATH"
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   - docker pull $REGPATH/$REPO1:$CI_COMMIT_REF_SLUG || true
-  - docker build --pull -t $REGPATH/$REPO1:$CI_COMMIT_SHA -t $REGPATH/$REPO1:$CI_COMMIT_REF_SLUG ./$$REPO1
+  - docker build --pull -t $REGPATH/$REPO1:$CI_COMMIT_SHA -t $REGPATH/$REPO1:$CI_COMMIT_REF_SLUG ./$REPO1
   - docker push $REGPATH/$REPO1:$CI_COMMIT_SHA
   - docker push $REGPATH/$REPO1:$CI_COMMIT_REF_SLUG
   only:
@@ -43,7 +43,7 @@ docker_build_repo2:
   script:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   - docker pull $REGPATH/$REPO2:$CI_COMMIT_REF_SLUG || true
-  - docker build --pull --cache-from $REGPATH/$REPO2:$CI_COMMIT_REF_SLUG -t $REGPATH/$REPO2:$CI_COMMIT_SHA -t $REGPATH/$REPO2:$CI_COMMIT_REF_SLUG ./$$REPO2
+  - docker build --pull --cache-from $REGPATH/$REPO2:$CI_COMMIT_REF_SLUG -t $REGPATH/$REPO2:$CI_COMMIT_SHA -t $REGPATH/$REPO2:$CI_COMMIT_REF_SLUG ./$REPO2
   - docker push $REGPATH/$REPO2:$CI_COMMIT_SHA
   - docker push $REGPATH/$REPO2:$CI_COMMIT_REF_SLUG
   only:
@@ -57,7 +57,7 @@ docker_build_repo3:
   script:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   - docker pull $REGPATH/$REPO3:$CI_COMMIT_REF_SLUG || true
-  - docker build --pull --cache-from $REGPATH/$REPO3:$CI_COMMIT_REF_SLUG -t $REGPATH/$REPO3:$CI_COMMIT_SHA -t $REGPATH/$REPO3:$CI_COMMIT_REF_SLUG ./$$REPO3
+  - docker build --pull --cache-from $REGPATH/$REPO3:$CI_COMMIT_REF_SLUG -t $REGPATH/$REPO3:$CI_COMMIT_SHA -t $REGPATH/$REPO3:$CI_COMMIT_REF_SLUG ./$REPO3
   - docker push $REGPATH/$REPO3:$CI_COMMIT_SHA
   - docker push $REGPATH/$REPO3:$CI_COMMIT_REF_SLUG
   only:
