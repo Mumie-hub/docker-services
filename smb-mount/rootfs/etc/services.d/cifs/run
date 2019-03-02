@@ -1,0 +1,8 @@
+#!/usr/bin/with-contenv bash
+
+mount -t cifs -o $MOUNTOPTIONS $SERVERPATH $MOUNTPOINT
+
+while true
+do
+  sleep 100
+done
