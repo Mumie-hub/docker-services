@@ -1,14 +1,14 @@
-FROM alpine
+FROM alpine:latest
 
 ENV USER_UID="1002" \
     USER_NAME="jdownloader" \
     JDOWNLOADER_LINK="http://installer.jdownloader.org/JDownloader.jar"
     
 ENV JAVA_VERSION=8 \
-    JAVA_VERSION_MINOR=201 \
-    JAVA_VERSION_BUILD=09 \
+    JAVA_VERSION_MINOR=202 \
+    JAVA_VERSION_BUILD=08 \
     JAVA_PACKAGE=server-jre \
-    JAVA_MAGIC=42970487e3af4f5aa5bca3f542482c60 \
+    JAVA_MAGIC=1961070e4c9b4e26a04e7f5a083f551e \
     JAVA_HOME=/opt/jdk \
     PATH=${PATH}:/opt/jdk/bin \
     GLIBC_VERSION=2.29-r0 \
@@ -29,7 +29,7 @@ RUN set -ex \
     # Downloading Oracle Java Server-Jre
     && mkdir -p /opt \
     && curl -jksSLH "Cookie: oraclelicense=accept-securebackup-cookie" -o /tmp/java.tar.gz \
-    http://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION}u${JAVA_VERSION_MINOR}-b${JAVA_VERSION_BUILD}/${JAVA_MAGIC}/${JAVA_PACKAGE}-${JAVA_VERSION}u${JAVA_VERSION_MINOR}-linux-x64.tar.gz \
+    https://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION}u${JAVA_VERSION_MINOR}-b${JAVA_VERSION_BUILD}/${JAVA_MAGIC}/${JAVA_PACKAGE}-${JAVA_VERSION}u${JAVA_VERSION_MINOR}-linux-x64.tar.gz \
     && tar -C /opt -zxvf /tmp/java.tar.gz \
     && ln -s /opt/jdk1.${JAVA_VERSION}.0_${JAVA_VERSION_MINOR} /opt/jdk \
     && find /opt/jdk/ -maxdepth 1 -mindepth 1 | grep -v jre | xargs rm -rf \

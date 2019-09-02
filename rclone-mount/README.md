@@ -54,7 +54,7 @@ The Container uses a tiny trap function, to handle docker stop/restart ( fusermo
 -e MountCommands="--allow-other --allow-non-empty --dir-cache-time 48h --poll-interval 5m --buffer-size 128M"
 ```
 
-All Commands can be found at [https://rclone.org/commands/rclone_mount/](https://rclone.org/commands/rclone_mount/). Use `--buffer-size 256M` (dont go to high), when you encounter some "Direct Stream" Problems on Plex Media Server (Samsung Smart TV for example).
+All Commands can be found at [https://rclone.org/commands/rclone_mount/](https://rclone.org/commands/rclone_mount/). Use `--buffer-size 256M` (dont go too high), when you encounter some "Direct Stream" problems on Plex Media Server (Samsung Smart TV for example).
 
 ## Troubleshooting:
 When you force remove the container, you have to `sudo fusermount -u -z /mnt/mediaefs` on the hostsystem!
