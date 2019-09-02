@@ -1,0 +1,19 @@
+version: '2'
+services:
+  mount-rclone01:
+    image: mumiehub/rclone-mount:latest
+#    privileged: true
+    cap_add:
+    - SYS_ADMIN
+    devices:
+    - /dev/fuse
+    security_opt:
+    - apparmor:unconfined
+    environment:
+      RemotePath: 'mediaefs:'
+      MountCommands: --allow-other --uid 1000 --gid 1000 --umask 022 --default-permissions --allow-non-empty --dir-cache-time 168h --poll-interval 5m --buffer-size 128M
+    stdin_open: true
+    tty: true
+    volumes:
+    - /path/to/config:/config
+    - /host/mount/point:/mnt/mediaefs:shared
