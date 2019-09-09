@@ -10,10 +10,12 @@ ENV GOPATH="/go" \
     UnmountCommands="-u -z"
 
 ## Alpine with Go Git
-RUN apk add --no-cache --update alpine-sdk ca-certificates go git fuse fuse-dev tree \
-	&& go get -u -v github.com/ncw/rclone \
-	&& cp /go/bin/rclone /usr/sbin/ \
-	&& rm -rf /go \
+RUN apk add --no-cache --update alpine-sdk ca-certificates go git fuse fuse-dev tree wget tzdata \
+        && cd /tmp \
+	&& wget -q https://downloads.rclone.org/v1.49.2/rclone-v1.49.2-linux-amd64.zip \
+        && unzip /tmp/rclone-v1.49.2-linux-amd64.zip \
+        && mv /tmp/rclone-*-linux-amd64/rclone /usr/sbin \
+        && rm -r /tmp/rclone* \
 	&& apk del alpine-sdk go git \
 	&& rm -rf /tmp/* /var/cache/apk/* /var/lib/apk/lists/*
 
