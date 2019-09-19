@@ -82,4 +82,4 @@ AutoUpgrade
 
 # Finally, start JDownloader.
 echo "Starting JDownloader..."
-exec su -pc "exec java -Djava.awt.headless=true -jar JDownloader.jar 2>&1 >/dev/null" $USER_NAME
+exec su -pc "exec java -Djava.awt.headless=true -jar ${JDPATH}/JDownloader.jar 2>&1 >/dev/null" $USER_NAME
