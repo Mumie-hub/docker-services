@@ -1,16 +1,16 @@
 #!/usr/bin/with-contenv sh
 
-#check if the mountpoint is empty
+#check if the MountPoint is empty
 #todo
 
-#check for other fsmounts, stop mounting if other mountpoint exists
-#mount | grep -c $MOUNTPOINT
+#check for other fsmounts, stop mounting if other MountPoint exists
+#mount | grep -c $MountPoint
 
-if grep -qs "$MOUNTPOINT" /proc/mounts; then
+if grep -qs "$MountPoint" /proc/mounts; then
     #exit container here
-    echo "found other mountpoint in /proc/mounts"
+    echo "found other MountPoint in /proc/mounts"
     exit 1
 else
-    echo "mountpoint $MOUNTPOINT is ready"
+    echo "MountPoint $MountPoint is ready"
     exit 0
 fi
