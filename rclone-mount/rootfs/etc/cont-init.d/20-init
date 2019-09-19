@@ -5,7 +5,7 @@ OS=""
 ConfigPath=""
 
 #Functions
-DectectOS(){
+DetectOS(){
   if [ -e /etc/alpine-release ]; then
     OS="alpine"
   elif [ -e /etc/os-release ]; then
@@ -40,8 +40,9 @@ mkdir -p \
     $ConfigDir
 fi
 
-#export config path env var
-export ConfigPath='$ConfigDir/$ConfigName'
+#export config path env var in s6
+#export ConfigPath="$ConfigDir/$ConfigName"
+printf "$ConfigDir/$ConfigName" > /var/run/s6/container_environment/ConfigPath
 
-DectectOS
+DetectOS
 AutoUpgrade
