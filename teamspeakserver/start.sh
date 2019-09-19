@@ -20,7 +20,6 @@ fi
 
 export LD_LIBRARY_PATH=/teamspeak
 
-TS3ARGS=""
 #if [ -e /$DATA_DIR/ts3server.ini ]; then
 #  TS3ARGS="inifile=/$DATA_DIR/ts3server.ini"
 #else
