@@ -18,7 +18,7 @@ if [ ! -e ${TARFILE} ]; then
   ##&& tar -j -x -f $TARFILE
 fi
 
-export LD_LIBRARY_PATH=/teamspeak
+export LD_LIBRARY_PATH='/teamspeak'
 
 #if [ -e /$DATA_DIR/ts3server.ini ]; then
 #  TS3ARGS="inifile=/$DATA_DIR/ts3server.ini"

@@ -40,8 +40,8 @@ mkdir -p \
     $ConfigDir
 fi
 
-#make config path env
-ConfigPath="$ConfigDir/$ConfigName"
+#export config path env var
+export ConfigPath='$ConfigDir/$ConfigName'
 
 DectectOS
 AutoUpgrade
