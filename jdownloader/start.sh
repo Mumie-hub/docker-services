@@ -2,7 +2,6 @@
 set -e
 
 #ENV
-JDPATH="/opt/JDownloader"
 OS=""
 
 #Functions

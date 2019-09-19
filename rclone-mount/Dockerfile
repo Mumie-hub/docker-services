@@ -1,4 +1,4 @@
-FROM alpine
+FROM alpine:latest
 
 ENV GOPATH="/go" \
     AccessFolder="/mnt" \
@@ -10,15 +10,24 @@ ENV GOPATH="/go" \
     UnmountCommands="-u -z"
 
 ## Alpine with Go Git
-RUN apk add --no-cache --update alpine-sdk ca-certificates go git fuse fuse-dev \
+RUN apk add --no-cache --update alpine-sdk ca-certificates go git fuse fuse-dev gnupg \
+    && echo "Installing S6 Overlay" \
+    && curl -o /tmp/s6-overlay.tar.gz -L \
+    "https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${OVERLAY_ARCH}.tar.gz" \
+    && curl -o /tmp/s6-overlay.tar.gz.sig -L \
+    "https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${OVERLAY_ARCH}.tar.gz.sig" \
+    && curl https://keybase.io/justcontainers/key.asc | gpg --import \
+    && gpg --verify /tmp/s6-overlay.tar.gz.sig /tmp/s6-overlay.tar.gz \
+    && tar xfz /tmp/s6-overlay.tar.gz -C / \
+    && echo "Download and compile rclone" \
     && go get -u -v github.com/rclone/rclone \
     && cp /go/bin/rclone /usr/sbin/ \
     && rm -rf /go \
-    && apk del alpine-sdk go git \
+    && apk del alpine-sdk go git gnupg \
     && rm -rf /tmp/* /var/cache/apk/* /var/lib/apk/lists/*
 
-ADD start.sh /start.sh
-RUN chmod +x /start.sh 
+COPY rootfs/ /
+RUN chmod +x /start.sh
 
 VOLUME ["/mnt"]
 

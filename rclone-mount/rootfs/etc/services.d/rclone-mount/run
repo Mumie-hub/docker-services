@@ -1,0 +1,3 @@
+#!/usr/bin/with-contenv bash
+
+/usr/sbin/rclone --config $ConfigPath mount $RemotePath $MountPoint $MountCommands
