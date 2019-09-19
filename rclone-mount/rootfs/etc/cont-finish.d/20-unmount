@@ -1,4 +1,6 @@
-#!/usr/bin/with-contenv bash
+#!/usr/bin/with-contenv sh
+
+#fusermount: failed to unmount /mnt/mediaefs: Invalid argument
 
 if grep -qs "$MOUNTPOINT" /proc/mounts; then
     echo "force nmounting with fusermount $UnmountCommands $MountPoint at: $(date +%Y.%m.%d-%T)"

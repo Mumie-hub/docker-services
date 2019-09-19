@@ -1,18 +1,7 @@
-#!/usr/bin/with-contenv bash
-
-#fix Mountpoint Syntax
-#remove / at the end
-
-#create folders
-
-#create mountpoint folder
-if [ ! -d "${MOUNTPOINT}" ]; then \
-mkdir -p \
-	$MOUNTPOINT
-fi
+#!/usr/bin/with-contenv sh
 
 #check if the mountpoint is empty
-
+#todo
 
 #check for other fsmounts, stop mounting if other mountpoint exists
 #mount | grep -c $MOUNTPOINT
