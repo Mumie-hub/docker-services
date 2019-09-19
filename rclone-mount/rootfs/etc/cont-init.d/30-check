@@ -6,7 +6,7 @@
 #check for other fsmounts, stop mounting if other MountPoint exists
 #mount | grep -c $MountPoint
 
-if grep -qs "$MountPoint" /proc/mounts; then
+if grep -E ''$RemotePath'.*'$MountPoint'|'$MountPoint'.*'$RemotePath'' /proc/mounts; then
     #exit container here
     echo "found other MountPoint in /proc/mounts"
     exit 1

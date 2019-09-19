@@ -2,7 +2,9 @@
 
 #fusermount: failed to unmount /mnt/mediaefs: Invalid argument
 
-if grep -qs "$MountPoint" /proc/mounts; then
+#awk '/efsgoogle:/ && /\'$ENVIRON["MountPoint"]'/ {print; exit 1}' /proc/mounts
+
+if grep -E ''$RemotePath'.*'$MountPoint'|'$MountPoint'.*'$RemotePath'' /proc/mounts; then
     echo "force unmounting with fusermount $UnmountCommands $MountPoint at: $(date +%Y.%m.%d-%T)"
     fusermount $UnmountCommands $MountPoint
     wait ${!}
