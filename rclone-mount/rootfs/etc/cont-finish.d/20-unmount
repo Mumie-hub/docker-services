@@ -1,11 +1,11 @@
 #!/usr/bin/with-contenv bash
 
 if grep -qs "$MOUNTPOINT" /proc/mounts; then
-    echo "Unmounting with fusermount $UnmountCommands $MountPoint at: $(date +%Y.%m.%d-%T)"
+    echo "force nmounting with fusermount $UnmountCommands $MountPoint at: $(date +%Y.%m.%d-%T)"
     fusermount $UnmountCommands $MountPoint
     wait ${!}
     exit 1
 else
-    echo "noting to unmount"
+    echo "successful unmounted"
     exit 0
 fi

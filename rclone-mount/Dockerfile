@@ -34,7 +34,8 @@ RUN chmod +x /start.sh
 
 VOLUME ["/mnt"]
 
-CMD ["/start.sh"]
+ENTRYPOINT ["/init"]
+#CMD ["/start.sh"]
 
 # Use this docker Options in run
 # --cap-add SYS_ADMIN --device /dev/fuse --security-opt apparmor:unconfined
