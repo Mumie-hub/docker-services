@@ -1,5 +1,11 @@
 #!/usr/bin/with-contenv sh
 
+## Read basename
+#backtick -n BASENAME { s6-basename ${0} }
+#importas -u BASENAME BASENAME
+#define PREFFIX "[cont-init.d] ${BASENAME}:"
+define PREFFIX "[cont-init.d]:"
+
 #ENV
 OS=""
 ConfigPath=""
@@ -44,5 +50,7 @@ fi
 #export ConfigPath="$ConfigDir/$ConfigName"
 printf "$ConfigDir/$ConfigName" > /var/run/s6/container_environment/ConfigPath
 
+s6-echo "${PREFFIX} ${C032} installing system updates${C000}"
+#s6-echo "${PREFFIX} ${C133}shutdown service${C000}"
 DetectOS
 AutoUpgrade

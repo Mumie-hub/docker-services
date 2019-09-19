@@ -1,15 +1,19 @@
 #!/usr/bin/with-contenv sh
 
+#wait for service shutdown
+s6-svwait -D /var/run/s6/services/*
+
 #fusermount: failed to unmount /mnt/mediaefs: Invalid argument
 
 #awk '/efsgoogle:/ && /\'$ENVIRON["MountPoint"]'/ {print; exit 1}' /proc/mounts
 
 if grep -E ''$RemotePath'.*'$MountPoint'|'$MountPoint'.*'$RemotePath'' /proc/mounts; then
-    echo "force unmounting with fusermount $UnmountCommands $MountPoint at: $(date +%Y.%m.%d-%T)"
+    s6-echo "${C133}force unmounting with fusermount $UnmountCommands $MountPoint at: $(date +%Y.%m.%d-%T)${C000}"
+#    echo "force unmounting with fusermount $UnmountCommands $MountPoint at: $(date +%Y.%m.%d-%T)"
     fusermount $UnmountCommands $MountPoint
     wait ${!}
     exit 1
 else
-    echo "successful unmounted"
+    echo "${C032}successful unmounted${C000}"
     exit 0
 fi
