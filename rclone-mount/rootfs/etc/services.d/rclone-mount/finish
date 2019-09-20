@@ -1,0 +1,4 @@
+#!/usr/bin/with-contenv sh
+
+s6-svscanctl -t /var/run/s6/services
+#s6-svc -wD /var/run/s6/services/rclone-mount/

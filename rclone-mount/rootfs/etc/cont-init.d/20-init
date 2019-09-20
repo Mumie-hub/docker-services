@@ -6,6 +6,24 @@
 #define PREFFIX "[cont-init.d] ${BASENAME}:"
 define PREFFIX "[cont-init.d]:"
 
+define C000 "\033[0m"
+define C030 "\033[0;30m"
+define C031 "\033[0;31m"
+define C032 "\033[0;32m"
+define C033 "\033[0;33m"
+define C034 "\033[0;34m"
+define C035 "\033[0;35m"
+define C036 "\033[0;36m"
+define C037 "\033[0;37m"
+define C130 "\033[1;30m"
+define C131 "\033[1;31m"
+define C132 "\033[1;32m"
+define C133 "\033[1;33m"
+define C134 "\033[1;34m"
+define C135 "\033[1;35m"
+define C136 "\033[1;36m"
+define C137 "\033[1;37m"
+
 #ENV
 OS=""
 ConfigPath=""
@@ -50,7 +68,7 @@ fi
 #export ConfigPath="$ConfigDir/$ConfigName"
 printf "$ConfigDir/$ConfigName" > /var/run/s6/container_environment/ConfigPath
 
-s6-echo "${PREFFIX} ${C032} installing system updates${C000}"
+s6-echo "${PREFFIX} ${C032}installing system updates${C000}"
 #s6-echo "${PREFFIX} ${C133}shutdown service${C000}"
 DetectOS
 AutoUpgrade
