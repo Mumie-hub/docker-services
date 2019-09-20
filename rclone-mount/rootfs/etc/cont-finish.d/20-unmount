@@ -33,6 +33,6 @@ if grep -Eq ''$RemotePath'.*'$MountPoint'|'$MountPoint'.*'$RemotePath'' /proc/mo
     wait ${!}
     exit 1
 else
-    echo "${C032}successful unmounted${C000}"
+    s6-echo "${C032}successful unmounted${C000}"
     exit 0
 fi
