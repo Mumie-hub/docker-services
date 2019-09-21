@@ -13,9 +13,9 @@ s6-svwait -D /var/run/s6/services/*
 
 #awk '/efsgoogle:/ && /\'$ENVIRON["MountPoint"]'/ {print; exit 1}' /proc/mounts
 
+#check if rclone gracefully unmounted
 if grep -Eq ''$RemotePath'.*'$MountPoint'|'$MountPoint'.*'$RemotePath'' /proc/mounts; then
     echo -e "${PREFFIX} ${Red}force unmounting with fusermount $UnmountCommands at: $(date +%Y.%m.%d-%T)${Color_Off}"
-#    echo "force unmounting with fusermount $UnmountCommands $MountPoint at: $(date +%Y.%m.%d-%T)"
     fusermount $UnmountCommands $MountPoint
     wait ${!}
     exit 1

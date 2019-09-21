@@ -28,7 +28,7 @@ fi
 
 echo -e "${PREFFIX} waiting for rclone shutdown"
 while checkRclone -eq 0; do
-    sleep 0.5
+    sleep 0.1
 done
 
 

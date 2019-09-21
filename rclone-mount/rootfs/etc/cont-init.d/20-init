@@ -2,7 +2,7 @@
 
 source /etc/colors.sh
 
-define PREFFIX "[cont-init.d] $(s6-basename ${0})"
+PREFFIX="[cont-init.d] $(s6-basename ${0}):"
 
 #ENV
 OS=""
@@ -20,35 +20,31 @@ DetectOS(){
 }
 
 AutoUpgrade(){
-    if [ "${OS}" == "alpine" ]; then
-        /sbin/apk --no-cache upgrade
-        /bin/rm -rf /var/cache/apk/*
-    elif [ "${OS}" == "ubuntu" ]; then
-        export DEBIAN_FRONTEND=noninteractive
-        /usr/bin/apt-get update
-        /usr/bin/apt-get -y --no-install-recommends dist-upgrade
-        /usr/bin/apt-get -y autoclean
-        /usr/bin/apt-get -y clean 
-        /usr/bin/apt-get -y autoremove
-        /bin/rm -rf /var/lib/apt/lists/*
-    fi
+  if [ "${OS}" == "alpine" ]; then
+      /sbin/apk --no-cache upgrade
+      /bin/rm -rf /var/cache/apk/*
+  elif [ "${OS}" == "ubuntu" ]; then
+      export DEBIAN_FRONTEND=noninteractive
+      /usr/bin/apt-get update
+      /usr/bin/apt-get -y --no-install-recommends dist-upgrade
+      /usr/bin/apt-get -y autoclean
+      /usr/bin/apt-get -y clean 
+      /usr/bin/apt-get -y autoremove
+      /bin/rm -rf /var/lib/apt/lists/*
+  fi
 }
 
 #fix Mountpoint Syntax
 #remove / at the end #todo
 
 #create folders
-if [ ! -d "${MountPoint}" ]; then \
 mkdir -p \
-	$MountPoint \
-    $ConfigDir
-fi
+  $MountPoint \
+  $ConfigDir
 
-#export config path env var in s6
-#export ConfigPath="$ConfigDir/$ConfigName"
+#export ConfigPath="$ConfigDir/$ConfigName env"
 printf "$ConfigDir/$ConfigName" > /var/run/s6/container_environment/ConfigPath
 
 echo -e "${PREFFIX} ${Blue}installing system updates${Color_Off}"
-#s6-echo "${PREFFIX} ${C133}shutdown service${C000}"
 DetectOS
 AutoUpgrade
