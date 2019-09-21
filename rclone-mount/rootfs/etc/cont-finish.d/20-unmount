@@ -1,38 +1,25 @@
 #!/usr/bin/with-contenv sh
 
-#ENV
-define C000 "\033[0m"
-define C030 "\033[0;30m"
-define C031 "\033[0;31m"
-define C032 "\033[0;32m"
-define C033 "\033[0;33m"
-define C034 "\033[0;34m"
-define C035 "\033[0;35m"
-define C036 "\033[0;36m"
-define C037 "\033[0;37m"
-define C130 "\033[1;30m"
-define C131 "\033[1;31m"
-define C132 "\033[1;32m"
-define C133 "\033[1;33m"
-define C134 "\033[1;34m"
-define C135 "\033[1;35m"
-define C136 "\033[1;36m"
-define C137 "\033[1;37m"
+source /etc/colors.sh
 
-#wait for service shutdown
+PREFFIX="[cont-finish.d] $(s6-basename ${0})"
+
+#s6-svc -d /var/run/s6/services/rclone-mount
+#s6-svc -wD /var/run/s6/services/rclone-mount
+
+echo -e "${PREFFIX} ${Yellow}waiting for shutdown of all services[DEBUG]${Color_Off}"
+#wait for all services to be down
 s6-svwait -D /var/run/s6/services/*
-
-#fusermount: failed to unmount /mnt/mediaefs: Invalid argument
 
 #awk '/efsgoogle:/ && /\'$ENVIRON["MountPoint"]'/ {print; exit 1}' /proc/mounts
 
 if grep -Eq ''$RemotePath'.*'$MountPoint'|'$MountPoint'.*'$RemotePath'' /proc/mounts; then
-    s6-echo "${C133}force unmounting with fusermount $UnmountCommands $MountPoint at: $(date +%Y.%m.%d-%T)${C000}"
+    echo -e "${PREFFIX} ${Red}force unmounting with fusermount $UnmountCommands at: $(date +%Y.%m.%d-%T)${Color_Off}"
 #    echo "force unmounting with fusermount $UnmountCommands $MountPoint at: $(date +%Y.%m.%d-%T)"
     fusermount $UnmountCommands $MountPoint
     wait ${!}
     exit 1
 else
-    s6-echo "${C032}successful unmounted${C000}"
+    echo -e "${PREFFIX} ${Green}successful unmounted${Color_Off}"
     exit 0
 fi

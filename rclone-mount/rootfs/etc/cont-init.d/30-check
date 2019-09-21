@@ -1,5 +1,9 @@
 #!/usr/bin/with-contenv sh
 
+source /etc/colors.sh
+
+PREFFIX "[cont-init.d] $(s6-basename ${0})"
+
 #check if the MountPoint is empty
 #todo
 
@@ -8,9 +12,11 @@
 
 if grep -Eq ''$RemotePath'.*'$MountPoint'|'$MountPoint'.*'$RemotePath'' /proc/mounts; then
     #exit container here
-    echo "found other MountPoint in /proc/mounts"
+    echo -e "${PREFFIX} ${Red}found other MountPoint in /proc/mounts${Color_Off}"
+    #cleanup mountpoint
+    umount $MountPoint
     exit 1
 else
-    echo "MountPoint $MountPoint is ready"
+    echo -e "${PREFFIX} ${Yellow}MountPoint $MountPoint is ready${Color_Off}"
     exit 0
 fi
