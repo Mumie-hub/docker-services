@@ -32,7 +32,6 @@ RUN apk --no-cache upgrade \
     && rm -rf /tmp/* /var/cache/apk/* /var/lib/apk/lists/*
 
 COPY rootfs/ /
-RUN chmod +x /start.sh
 
 VOLUME ["/mnt"]
 
