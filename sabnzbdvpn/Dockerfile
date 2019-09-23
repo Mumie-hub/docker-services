@@ -15,10 +15,9 @@ ENV LANG="en_US.UTF-8" \
     WATCH_DIR=""
 
 RUN apt-get update \
-    && apt-get -y install software-properties-common nano \
+    && apt-get install -y software-properties-common nano \
     && add-apt-repository ppa:jcfp/ppa \
     && add-apt-repository ppa:jcfp/sab-addons \
-    && apt-get update \
     && apt-get install -y openvpn curl sudo sabnzbdplus wget par2-tbb python-sabyenc p7zip-full locales \
     && locale-gen en_US.UTF-8 \
     && curl -sLO https://github.com/Yelp/dumb-init/releases/download/v1.2.2/dumb-init_1.2.2_amd64.deb \

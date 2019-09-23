@@ -1,0 +1,50 @@
+#!/usr/bin/with-contenv sh
+
+source /etc/colors.sh
+
+PREFFIX="[cont-init.d] $(s6-basename ${0}):"
+
+#ENV
+OS=""
+ConfigPath=""
+
+#Functions
+DetectOS(){
+  if [ -e /etc/alpine-release ]; then
+    OS="alpine"
+  elif [ -e /etc/os-release ]; then
+    if /bin/grep -q "NAME=\"Ubuntu\"" /etc/os-release ; then 
+      OS="ubuntu"
+    fi
+  fi
+}
+
+AutoUpgrade(){
+  if [ "${OS}" == "alpine" ]; then
+      /sbin/apk --no-cache upgrade
+      /bin/rm -rf /var/cache/apk/*
+  elif [ "${OS}" == "ubuntu" ]; then
+      export DEBIAN_FRONTEND=noninteractive
+      /usr/bin/apt-get update
+      /usr/bin/apt-get -y --no-install-recommends dist-upgrade
+      /usr/bin/apt-get -y autoclean
+      /usr/bin/apt-get -y clean 
+      /usr/bin/apt-get -y autoremove
+      /bin/rm -rf /var/lib/apt/lists/*
+  fi
+}
+
+#fix Mountpoint Syntax
+#remove / at the end #todo
+
+#create folders
+mkdir -p \
+  $MountPoint \
+  $ConfigDir
+
+#export ConfigPath="$ConfigDir/$ConfigName env"
+printf "$ConfigDir/$ConfigName" > /var/run/s6/container_environment/ConfigPath
+
+echo -e "${PREFFIX} ${Blue}installing system updates${Color_Off}"
+DetectOS
+AutoUpgrade

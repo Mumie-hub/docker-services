@@ -1,0 +1,24 @@
+#!/usr/bin/with-contenv sh
+
+source /etc/colors.sh
+
+PREFFIX="[cont-init.d] $(s6-basename ${0}):"
+
+#check if the MountPoint is empty
+if [ "$(ls -A ${MountPoint})" ]; then
+    echo -e "${PREFFIX} ${Red}MountPoint folder not empty[ERROR]${Color_Off}"
+    #todo
+fi
+
+#check for other fsmounts, stop mounting if other MountPoint exists
+#mount | grep -c $MountPoint
+
+if grep -Eq ''$RemotePath'.*'$MountPoint'|'$MountPoint'.*'$RemotePath'' /proc/mounts; then
+    #exit container here
+    echo -e "${PREFFIX} ${Red}found other MountPoint in /proc/mounts${Color_Off}"
+    #cleanup mountpoint
+    exit 1
+else
+    echo -e "${PREFFIX} ${Green}MountPoint $MountPoint is ready${Color_Off}"
+    exit 0
+fi

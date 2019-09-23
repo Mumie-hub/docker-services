@@ -5,10 +5,10 @@
 Rclone Mount Container
 ---
 
-Lightweight and simple Container Image (`alpine:latest - 44MB`) with compiled rclone (https://github.com/ncw/rclone master). Mount your cloudstorage like amazon cloud drive inside a container and make it available to other containers like your Plex Media Server or on your hostsystem (mountpoint on host is shared). You need a working rclone.conf (from another host or create it inside the container). all rclone remotes can be used.
+Lightweight and simple Container Image (`alpine:latest - 160MB`) with compiled rclone (https://github.com/ncw/rclone master). Mount your cloudstorage like amazon cloud drive inside a container and make it available to other containers like your Plex Media Server or on your hostsystem (mountpoint on host is shared). You need a working rclone.conf (from another host or create it inside the container with entrypoint /bin/sh). all rclone remotes can be used.
 
 
-The Container uses a tiny trap function, to handle docker stop/restart ( fusermount -uz $MountPoint is applied on SIGTERM signal or app crashes also) on PID 1.
+The Container uses S6 Overlay, to handle docker stop/restart ( fusermount -uz $MountPoint is applied on app crashes also) and also preparing the mountpoint.
 
 
 # Usage Example:
