@@ -1,11 +1,15 @@
 #!/usr/bin/with-contenv bash
 
+source /etc/colors.sh
+
+PREFFIX="[cont-finish.d] $(s6-basename ${0}):"
+
 if grep -qs "$MOUNTPOINT" /proc/mounts; then
-    echo "Unmounting: $MOUNTPOINT $(date +%Y.%m.%d-%T)"
+    echo "${PREFFIX} ${Green}Unmounting: $MOUNTPOINT $(date +%Y.%m.%d-%T)${Color_Off}"
     umount $UMOUNTOPTIONS $MOUNTPOINT
     wait ${!}
     exit 0
 else
-    echo "noting to unmount"
+    echo "${PREFFIX}nothing to unmount"
     exit 1
 fi

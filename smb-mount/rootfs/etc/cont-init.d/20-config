@@ -1,5 +1,9 @@
 #!/usr/bin/with-contenv bash
 
+source /etc/colors.sh
+
+PREFFIX="[cont-init.d] $(s6-basename ${0}):"
+
 #fix Mountpoint Syntax
 #remove / at the end
 
@@ -11,15 +15,18 @@ mkdir -p \
 	$MOUNTPOINT
 fi
 
-#check if the mountpoint is empty
-
+#check if the MOUNTPOINT is empty
+if [ "$(ls -A ${MOUNTPOINT})" ]; then
+    echo -e "${PREFFIX} ${Red}MountPoint folder not empty[ERROR]${Color_Off}"
+    #todo
+fi
 
 #check for other fsmounts, stop mounting if other mountpoint exists
 #mount | grep -c $MOUNTPOINT
 
 if grep -qs "$MOUNTPOINT" /proc/mounts; then
     #exit container here
-    echo "found other mountpoint in /proc/mounts"
+    echo "${PREFFIX} found other mountpoint in /proc/mounts${Color_Off}"
     exit 1
 else
     echo "mountpoint $MOUNTPOINT is ready"

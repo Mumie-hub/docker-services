@@ -1,5 +1,18 @@
 #!/usr/bin/with-contenv bash
 
+#set -x
+
+source /etc/colors.sh
+
+PREFFIX="[services.d] [smb-mount]-$(s6-basename ${0}):"
+
+echo -e "${PREFFIX} ${Green}starting smb mount $(date +%Y.%m.%d-%T)${Color_Off}"
+
+## ECHO DEBUG
+if [ "$DEBUG" = true ]; then
+    echo -e "${PREFFIX} [DEBUG] command: mount -t cifs -o $MOUNTOPTIONS $SERVERPATH $MOUNTPOINT"
+fi
+
 mount -t cifs -o $MOUNTOPTIONS $SERVERPATH $MOUNTPOINT
 
 while true
