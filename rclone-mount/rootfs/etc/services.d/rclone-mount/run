@@ -11,6 +11,6 @@ echo -e "${PREFFIX} ${Green}starting rclone mount $(date +%Y.%m.%d-%T)${Color_Of
 ## ECHO DEBUG
 if [ "$DEBUG" = true ]; then
     echo -e "${PREFFIX} [DEBUG] command: /usr/sbin/rclone --config $ConfigPath mount $RemotePath $MountPoint $MountCommands"
-if
+fi
 
 /usr/sbin/rclone --config $ConfigPath mount $RemotePath $MountPoint $MountCommands
