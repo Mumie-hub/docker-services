@@ -2,12 +2,12 @@
 
 source /etc/colors.sh
 
-PREFFIX="[cont-finish.d] $(s6-basename ${0})"
+PREFFIX="[cont-finish.d] $(s6-basename ${0}):"
 
 #s6-svc -d /var/run/s6/services/rclone-mount
 #s6-svc -wD /var/run/s6/services/rclone-mount
 
-echo -e "${PREFFIX} ${Yellow}waiting for shutdown of all services[DEBUG]${Color_Off}"
+echo -e "${PREFFIX} ${Yellow}waiting for shutdown of all services${Color_Off}"
 #wait for all services to be down
 s6-svwait -D /var/run/s6/services/*
 
@@ -20,6 +20,8 @@ if grep -Eq ''$RemotePath'.*'$MountPoint'|'$MountPoint'.*'$RemotePath'' /proc/mo
     wait ${!}
     exit 1
 else
+    #cleanup of mount namespace
+    umount $MountPoint
     echo -e "${PREFFIX} ${Green}successful unmounted${Color_Off}"
     exit 0
 fi

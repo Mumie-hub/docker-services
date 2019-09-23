@@ -4,7 +4,7 @@
 
 source /etc/colors.sh
 
-PREFFIX="[services.d] $(s6-basename ${0})"
+PREFFIX="[services.d] [rclone-mount]-$(s6-basename ${0}):"
 
 SERVICE_DIR=/var/run/s6/services
 SERVICE=rclone-mount
@@ -22,11 +22,11 @@ if checkRclone; then
     tempPID="$(pgrep rclon[e])"
     kill ${tempPID}
 else
-    echo -e "${PREFFIX} ${Red}rclone process not present, restarting container[DEBUG]${Color_Off}"
+    echo -e "${PREFFIX} ${Red}rclone process not present, restarting container[ERROR]${Color_Off}"
     s6-svscanctl -t /var/run/s6/services
 fi
 
-echo -e "${PREFFIX} waiting for rclone shutdown"
+echo -e "${PREFFIX} ${Yellow}waiting for rclone shutdown${Color_Off}"
 while checkRclone -eq 0; do
     sleep 0.1
 done
