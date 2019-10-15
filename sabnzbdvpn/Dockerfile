@@ -38,9 +38,10 @@ ADD scripts/ /scripts/
 RUN chmod +x /etc/openvpn/start.sh \
     && chmod +x /scripts/*.sh
 
-VOLUME $DOWNLOAD_DIR
-#VOLUME /config
+VOLUME $DOWNLOAD_DIR $SABNZBD_CONFIG_DIR
 
 EXPOSE 8080 8090
 
-CMD ["dumb-init", "/etc/openvpn/start.sh"]
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+
+CMD ["/etc/openvpn/start.sh"]
