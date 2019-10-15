@@ -25,7 +25,7 @@ fi
 
 . /scripts/userSetup.sh
 
-CONTROL_OPTS="--script-security 3 --up /scripts/start.sh --down-pre /scripts/stop.sh"
+CONTROL_OPTS="--script-security 3 --route-up /scripts/start.sh --route-pre-down /scripts/stop.sh"
 OPENVPN_CONFIG_PATH="$OPENVPN_CONFIG_DIR/$OPENVPN_CONFIG"
 
 #printf "USER=${USER_NAME}\nHOST=0.0.0.0\nPORT=8080\nCONFIG=${SABNZBD_CONFIG_DIR}\n" > /etc/default/sabnzbdplus \
