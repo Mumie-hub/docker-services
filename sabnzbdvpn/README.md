@@ -6,13 +6,13 @@ Docker container which runs SABnzbd while connected to OpenVPN.
 To run the container use this command for example:
 
 ```
-docker run -d --name sabnzbd_vpn \
-            -v /your/storage/path:/data \
-            -v /path/to/ovpn-file:/etc/openvpn/custom
+docker run -d --name sabnzbdvpn \
+            -v /host/storage/path:/config \
+            -v /path/to/openvpnconfigdir:/etc/openvpn/custom
             -v /etc/localtime:/etc/localtime:ro \
             -e "LOCAL_NETWORK=192.168.0.0/24" \
             -p 8080:8080 \
-            mumie/sabnzbdvpn
+            mumiehub/sabnzbdvpn
 ```
 
 
@@ -53,6 +53,7 @@ If you set `LOCAL_NETWORK` correctly, the WebUI of SABnzbd should be at http://c
 The container supports the `LOCAL_NETWORK` environment variable. For instance if your local network uses the subnet 192.168.0.0/24 you should pass `-e LOCAL_NETWORK=192.168.0.0/24`. It must match your subnet, else your traffic will be "non-local" traffic and therefore be routed out through the VPN interface.
 
 Alternatively you can reverse proxy the traffic through another container, as that container would be in the docker range. 
+Nginx with proxypass config.
 
 ```
 $ docker run -d \
@@ -60,6 +61,7 @@ $ docker run -d \
       -p 8080:8080 \
       nginx:latest
 ```
+
 
 ## Tips and Tricks
 
@@ -83,4 +85,4 @@ If the VPN connection fails or the container for any other reason loses connecti
 #### Wrong link mtu
 
 When your are using a managed network layer for example, the default link mtu of 1500 can be to big. Setting a lower mtu in OpenVPN should help:
-`-e OPENVPN_OPTS --tun-mtu 1300`
+`-e OPENVPN_OPTS=--tun-mtu 1300`

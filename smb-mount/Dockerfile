@@ -3,13 +3,15 @@ FROM alpine:latest
 ARG OVERLAY_VERSION="v1.22.1.0"
 ARG OVERLAY_ARCH="amd64"
 
-ENV SERVERPATH="//192.168.1.1/example" \
+ENV DEBUG="false" \
+    SERVERPATH="//192.168.1.1/example" \
     MOUNTPOINT="/mnt/smb" \
-    MOUNTOPTIONS="" \
+    MOUNTOPTIONS="vers=3.1.1,uid=1000,gid=1000,file_mode=0774,dir_mode=0775,rw,username=user,password=password" \
     UMOUNTOPTIONS="-a -t cifs -l" \
     AccessFolder="/mnt"
 
-RUN apk add --no-cache --update cifs-utils bash tar curl ca-certificates gnupg grep \
+RUN apk --no-cache upgrade \
+    && apk add --no-cache --update cifs-utils bash tar curl ca-certificates gnupg grep \
     && curl -o /tmp/s6-overlay.tar.gz -L \
     "https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${OVERLAY_ARCH}.tar.gz" \
     && curl -o /tmp/s6-overlay.tar.gz.sig -L \
@@ -23,12 +25,10 @@ RUN apk add --no-cache --update cifs-utils bash tar curl ca-certificates gnupg g
 # add local files
 COPY rootfs/ /
 
-#RUN chmod +x /start.sh
-
 #VOLUME ["/mnt"]
 
 ENTRYPOINT ["/init"]
 
 # HEALTHCHECK --interval=5s --timeout=2s --retries=20 CMD /healthcheck.sh || exit 1
 # Use this args in docker run
-# --cap-add SYS_ADMIN --cap-add DAC_READ_SEARCH --security-opt apparmor:unconfine
+# --cap-add SYS_ADMIN --cap-add DAC_READ_SEARCH --security-opt apparmor:unconfined
