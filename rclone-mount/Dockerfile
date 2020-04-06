@@ -27,7 +27,7 @@ RUN apk --no-cache upgrade \
     && echo "Download and compile rclone" \
     && go get -u -v github.com/rclone/rclone \
     && cp /go/bin/rclone /usr/sbin/ \
-    && rm -rf /go \
+    && rm -rf /go || true \
     && apk del alpine-sdk go git gnupg \
     && rm -rf /tmp/* /var/cache/apk/* /var/lib/apk/lists/*
 
