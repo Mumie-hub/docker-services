@@ -16,11 +16,11 @@ ENV LANG="en_US.UTF-8" \
     WATCH_DIR=""
 
 RUN apt-get update \
-    && apt-get install -y software-properties-common sudo curl wget nano locales python-sabyenc python3-sabyenc p7zip-full par2-tbb unzip \
+    && apt-get install -y software-properties-common sudo curl wget nano locales python3-sabyenc python-chardet python3-chardet p7zip-full unzip \
     && add-apt-repository ppa:jcfp/ppa \
     && add-apt-repository ppa:jcfp/sab-addons \
     && echo "install openvpn and sabnzbdplus packages" \
-    && apt-get install -y openvpn sabnzbdplus \
+    && apt-get install -y openvpn sabnzbdplus par2-tbb \
     && locale-gen en_US.UTF-8 \
     && curl -sLO https://github.com/Yelp/dumb-init/releases/download/v1.2.2/dumb-init_1.2.2_amd64.deb \
     && dpkg -i dumb-init_*.deb \
