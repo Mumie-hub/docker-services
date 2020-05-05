@@ -12,8 +12,6 @@
 #  chmod 600 /etc/openvpn/custom/openvpn-credentials.txt
 #fi
 
-#dockerize -template /etc/transmission/environment-variables.tmpl:/etc/transmission/environment-variables.sh /bin/true
-
 #set routing gateway for the container
 if [ -n "${LOCAL_NETWORK-}" ]; then
   eval $(/sbin/ip r s 0.0.0.0/0 | awk '{if($5!="tun0"){print "GW="$3"\nINT="$5; exit}}')

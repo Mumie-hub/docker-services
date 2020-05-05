@@ -2,6 +2,7 @@ FROM ubuntu:latest
 
 ENV LANG="en_US.UTF-8" \
     LANGUAGE="en_US.UTF-8" \
+    LC_ALL="en_US.UTF-8" \
     USER_NAME="abc" \
     PUID=1003 \
     PGID=1003 \
@@ -15,15 +16,18 @@ ENV LANG="en_US.UTF-8" \
     WATCH_DIR=""
 
 RUN apt-get update \
-    && apt-get install -y software-properties-common nano \
+    && apt-get install -y software-properties-common sudo curl wget nano locales python3-sabyenc python-chardet python3-chardet p7zip-full unzip \
     && add-apt-repository ppa:jcfp/ppa \
     && add-apt-repository ppa:jcfp/sab-addons \
-    && apt-get install -y openvpn curl sudo sabnzbdplus wget par2-tbb python-sabyenc p7zip-full locales \
+    && echo "install openvpn and sabnzbdplus packages" \
+    && apt-get install -y openvpn sabnzbdplus par2-tbb \
     && locale-gen en_US.UTF-8 \
     && curl -sLO https://github.com/Yelp/dumb-init/releases/download/v1.2.2/dumb-init_1.2.2_amd64.deb \
     && dpkg -i dumb-init_*.deb \
     && rm -rf dumb-init_*.deb \
-    && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    && echo "cleanup tasks" \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && groupmod -g 1000 users \
     && mkdir -p /home/${USER_NAME} \
     && useradd -u ${PUID} -U -d /home/${USER_NAME} -s /bin/false ${USER_NAME} \
@@ -31,7 +35,6 @@ RUN apt-get update \
 
     # deprecated and modified from other github repo
     #&& printf "USER=root\nHOST=0.0.0.0\nPORT=8080\nCONFIG=/config\n" > /etc/default/sabnzbdplus \
-    #&& /etc/init.d/sabnzbdplus start
 
 ADD openvpn/ /etc/openvpn/
 ADD scripts/ /scripts/
