@@ -2,6 +2,7 @@ FROM ubuntu:latest
 
 ENV LANG="en_US.UTF-8" \
     LANGUAGE="en_US.UTF-8" \
+    LC_ALL="en_US.UTF-8" \
     USER_NAME="abc" \
     PUID=1003 \
     PGID=1003 \
@@ -15,7 +16,7 @@ ENV LANG="en_US.UTF-8" \
     WATCH_DIR=""
 
 RUN apt-get update \
-    && apt-get install -y software-properties-common nano \
+    && apt-get install -y software-properties-common nano unzip \
     && add-apt-repository ppa:jcfp/ppa \
     && add-apt-repository ppa:jcfp/sab-addons \
     && apt-get install -y openvpn curl sudo sabnzbdplus wget par2-tbb python-sabyenc p7zip-full locales \
@@ -31,7 +32,6 @@ RUN apt-get update \
 
     # deprecated and modified from other github repo
     #&& printf "USER=root\nHOST=0.0.0.0\nPORT=8080\nCONFIG=/config\n" > /etc/default/sabnzbdplus \
-    #&& /etc/init.d/sabnzbdplus start
 
 ADD openvpn/ /etc/openvpn/
 ADD scripts/ /scripts/

@@ -6,7 +6,7 @@
 
 USER_HOME=/home/${USER_NAME}
 
-mkdir ${USER_HOME} \
+mkdir -p ${USER_HOME} \
     ${SABNZBD_CONFIG_DIR} \
     ${DOWNLOAD_DIR} \
     ${INCOMPLETE_DIR} \
@@ -19,7 +19,7 @@ fi
 
 echo "Setting owner for Folder paths to ${PUID}:${PGID}"
 
-chown -R ${USER_NAME}:${USER_NAME} \
+chown -f -R ${USER_NAME}:${USER_NAME} \
     ${USER_HOME} \
     ${SABNZBD_CONFIG_DIR} \
     ${DOWNLOAD_DIR} \
