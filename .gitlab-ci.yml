@@ -18,7 +18,7 @@ stages:
 before_script:
   - echo "starting new job in $REGPATH"
   - docker info
-#  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  #- docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
 docker_build_repo1:
   stage: build
@@ -88,11 +88,12 @@ docker_test1:
   - docker:dind
   script:
   - echo "finished"
-#  - do some test
-#  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  # do some test
+  #- docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   only:
-  - master
-  - dev
+    refs:
+      - master
+      - dev
 
 docker_push1:
   stage: push
@@ -101,8 +102,10 @@ docker_push1:
   - docker:dind
   script:
   - echo "manual job done"
-#  - do some test
-#  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  # push image to registry
+  #- docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   only:
-  - dev
+    refs:
+      - master
+      - dev
   when: manual
