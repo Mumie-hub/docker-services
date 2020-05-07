@@ -5,7 +5,7 @@
 Rclone Mount Container
 ---
 
-Lightweight and simple Container Image (`alpine:latest - 160MB`) with compiled rclone (https://github.com/ncw/rclone master). Mount your cloudstorage like amazon cloud drive inside a container and make it available to other containers like your Plex Media Server or on your hostsystem (mountpoint on host is shared). You need a working rclone.conf (from another host or create it inside the container with entrypoint /bin/sh). all rclone remotes can be used.
+Lightweight and simple Container Image (`alpine:latest - 160MB`) with compiled rclone (https://github.com/ncw/rclone master). Mount your cloudstorage like google drive inside a container and make it available to other containers like your Plex Server or on your hostsystem (mount namespace on the host is shared). You need a working rclone.conf (from another host or create it inside the container with entrypoint /bin/sh). all rclone remotes can be used.
 
 
 The Container uses S6 Overlay, to handle docker stop/restart ( fusermount -uz $MountPoint is applied on app crashes also) and also preparing the mountpoint.
@@ -54,10 +54,10 @@ The Container uses S6 Overlay, to handle docker stop/restart ( fusermount -uz $M
 -e MountCommands="--allow-other --allow-non-empty --dir-cache-time 48h --poll-interval 5m --buffer-size 128M"
 ```
 
-All Commands can be found at [https://rclone.org/commands/rclone_mount/](https://rclone.org/commands/rclone_mount/). Use `--buffer-size 256M` (dont go too high), when you encounter some "Direct Stream" problems on Plex Media Server (Samsung Smart TV for example).
+All Commands can be found at [https://rclone.org/commands/rclone_mount/](https://rclone.org/commands/rclone_mount/). Use `--buffer-size 256M` (dont go too high), when you encounter some "Direct Stream" problems on Plex Server for example.
 
 ## Troubleshooting:
-When you force remove the container, you have to `sudo fusermount -u -z /mnt/mediaefs` on the hostsystem!
+When you force remove the container, you have to `sudo fusermount -u -z /host/mount/point` on the hostsystem!
 
 
 
@@ -65,6 +65,5 @@ Todo
 ----
 
 * [ ] more settings
-* [ ] more specific FAQ and Troubleshooting
 * [ ] Auto Update Function
 * [ ] launch with specific USER_ID
