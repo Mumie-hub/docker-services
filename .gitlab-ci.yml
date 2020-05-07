@@ -13,6 +13,7 @@ variables:
 stages:
   - build
   - test
+  - push
 
 before_script:
   - echo "starting new job in $REGPATH"
@@ -32,8 +33,11 @@ docker_build_repo1:
   - docker push $REGPATH/$REPO1:$CI_COMMIT_SHA
   - docker push $REGPATH/$REPO1:$CI_COMMIT_REF_SLUG
   only:
-  - dev
-  - master
+    refs:
+      - master
+      - dev
+    changes:
+      - rclone-mount/**/*
 
 docker_build_repo2:
   stage: build
@@ -47,7 +51,11 @@ docker_build_repo2:
   - docker push $REGPATH/$REPO2:$CI_COMMIT_SHA
   - docker push $REGPATH/$REPO2:$CI_COMMIT_REF_SLUG
   only:
-  - dev
+    refs:
+      - master
+      - dev
+    changes:
+      - smb-mount/**/*
 
 docker_build_repo3:
   stage: build
@@ -61,7 +69,11 @@ docker_build_repo3:
   - docker push $REGPATH/$REPO3:$CI_COMMIT_SHA
   - docker push $REGPATH/$REPO3:$CI_COMMIT_REF_SLUG
   only:
-  - dev
+    refs:
+      - master
+      - dev
+    changes:
+      - jdownloader/**/*
 
 #docker_build2:
 #  stage: build
@@ -69,7 +81,7 @@ docker_build_repo3:
 #  - docker info
 #  - docker build -t $LATEST_VER -t $MAJOR_VER .
 
-docker_push1:
+docker_test1:
   stage: test
   image: docker:latest
   services:
@@ -79,15 +91,16 @@ docker_push1:
 #  - do some test
 #  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   only:
+  - master
   - dev
 
-docker_push2:
-  stage: test
+docker_push1:
+  stage: push
   image: docker:latest
   services:
   - docker:dind
   script:
-  - echo "manual Job done"
+  - echo "manual job done"
 #  - do some test
 #  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   only:

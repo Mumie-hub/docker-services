@@ -5,11 +5,12 @@ ENV USER_UID="1002" \
     JDOWNLOADER_LINK="http://installer.jdownloader.org/JDownloader.jar" \
     JDPATH="/jdownloader" \
     LANG='C.UTF-8' \
-    LANGUAGE='C.UTF-8'
+    LANGUAGE='C.UTF-8' \
+    LC_ALL="C.UTF-8"
     
 ENV JAVA_HOME=/opt/jdk \
     PATH=${PATH}:/opt/jdk/bin \
-    GLIBC_VERSION=2.30-r0
+    GLIBC_VERSION=2.31-r0
 
 # alpine - openjdk8-jre-base java-jna openjdk8-jre-lib libstdc++  glibc-bin glibc-i18n
 # libstdc++ and glibc-i18n needed for jdownloader building 7zip Package
