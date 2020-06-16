@@ -20,18 +20,37 @@ before_script:
   - docker info
   #- docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
+buildx:
+  image: docker:19.03-git
+  stage: buildx
+  variables:
+    GIT_STRATEGY: none
+  artifacts:
+    paths:
+      - buildx
+    expire_in: 1 hour
+  services:
+    - docker:19.03-dind
+  script:
+    - export DOCKER_BUILDKIT=1
+    - git clone git://github.com/docker/buildx ./docker-buildx
+    - docker build --platform=local -o . ./docker-buildx
+
 docker_build_repo1:
   stage: build
   image: docker:latest
   services:
-  - docker:dind
+    - name: docker:19.03-dind
+      command: ["--experimental"]
+  before_script:
+    - mkdir -p ~/.docker/cli-plugins
+    - mv buildx ~/.docker/cli-plugins/docker-buildx
+    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
   script:
   - echo "$CI_PROJECT_PATH"
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   - docker pull $REGPATH/$REPO1:$CI_COMMIT_REF_SLUG || true
-  - docker build --pull -t $REGPATH/$REPO1:$CI_COMMIT_SHA -t $REGPATH/$REPO1:$CI_COMMIT_REF_SLUG ./$REPO1
-  - docker push $REGPATH/$REPO1:$CI_COMMIT_SHA
-  - docker push $REGPATH/$REPO1:$CI_COMMIT_REF_SLUG
+  - docker buildx build --push -t $REGPATH/$REPO1:$CI_COMMIT_SHA -t $REGPATH/$REPO1:$CI_COMMIT_REF_SLUG --platform linux/amd64,linux/arm/v7 --build-arg OVERLAY_ARCH=$TARGETARCH ./$REPO1
   only:
     refs:
       - master
