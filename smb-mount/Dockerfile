@@ -1,6 +1,6 @@
 FROM alpine:latest
 
-ARG OVERLAY_VERSION="v1.22.1.0"
+ARG OVERLAY_VERSION="v2.0.0.1"
 ARG OVERLAY_ARCH="amd64"
 
 ENV DEBUG="false" \
