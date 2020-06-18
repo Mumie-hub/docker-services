@@ -25,8 +25,9 @@ fi
 #mount | grep -c $MOUNTPOINT
 
 if grep -qs "$MOUNTPOINT" /proc/mounts; then
-    #exit container here
-    echo "${PREFFIX} found other mountpoint in /proc/mounts${Color_Off}"
+    #exit container here if other mountpoint than docker volume mount is found
+    #todo
+    echo -e "${PREFFIX} found other mountpoint in /proc/mounts${Color_Off}"
     exit 1
 else
     echo "mountpoint $MOUNTPOINT is ready"
