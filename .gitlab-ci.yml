@@ -50,7 +50,7 @@ docker_build_repo1:
   - echo "$CI_PROJECT_PATH"
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   - docker pull $REGPATH/$REPO1:$CI_COMMIT_REF_SLUG || true
-  - docker buildx build --push -t $REGPATH/$REPO1:$CI_COMMIT_SHA -t $REGPATH/$REPO1:$CI_COMMIT_REF_SLUG --platform linux/amd64,linux/arm/v7 --build-arg OVERLAY_ARCH=$TARGETARCH ./$REPO1
+  - docker buildx build --push -t $REGPATH/$REPO1:$CI_COMMIT_SHA -t $REGPATH/$REPO1:$CI_COMMIT_REF_SLUG --platform linux/amd64,linux/arm/v7 ./$REPO1
   only:
     refs:
       - master
