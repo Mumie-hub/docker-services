@@ -1,5 +1,6 @@
 FROM alpine:latest
 
+ARG RCLONE_VERSION="v1.52.2"
 ARG OVERLAY_VERSION="v1.22.1.0"
 ARG OVERLAY_ARCH="amd64"
 
@@ -25,7 +26,7 @@ RUN apk --no-cache upgrade \
     && gpg --verify /tmp/s6-overlay.tar.gz.sig /tmp/s6-overlay.tar.gz \
     && tar xfz /tmp/s6-overlay.tar.gz -C / \
     && echo "Download and compile rclone" \
-    && go get -u -v github.com/rclone/rclone \
+    && go get -u -v github.com/rclone/rclone@${RCLONE_VERSION} \
     && cp /go/bin/rclone /usr/sbin/ \
     && rm -rf /go || true \
     && apk del alpine-sdk go git gnupg \
