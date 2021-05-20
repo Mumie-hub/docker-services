@@ -1,8 +1,8 @@
-FROM alpine:latest
+FROM alpine:3.12.0
 
 ARG RCLONE_VERSION="v1.55.1"
 ARG OVERLAY_VERSION="v1.22.1.0"
-ARG OVERLAY_ARCH="amd64"
+ARG TARGETARCH
 
 ENV DEBUG="false" \
     GOPATH="/go" \
@@ -20,9 +20,9 @@ RUN apk --no-cache upgrade \
     && apk add --no-cache --update alpine-sdk ca-certificates go git fuse fuse-dev gnupg \
     && echo "Installing S6 Overlay" \
     && curl -o /tmp/s6-overlay.tar.gz -L \
-    "https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${OVERLAY_ARCH}.tar.gz" \
+    "https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${TARGETARCH}.tar.gz" \
     && curl -o /tmp/s6-overlay.tar.gz.sig -L \
-    "https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${OVERLAY_ARCH}.tar.gz.sig" \
+    "https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${TARGETARCH}.tar.gz.sig" \
     && curl https://keybase.io/justcontainers/key.asc | gpg --import \
     && gpg --verify /tmp/s6-overlay.tar.gz.sig /tmp/s6-overlay.tar.gz \
     && tar xfz /tmp/s6-overlay.tar.gz -C / \
