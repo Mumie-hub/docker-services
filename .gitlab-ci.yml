@@ -1,85 +1,71 @@
 #image: gitlab/dind
 
-variables:
-#  REGISTRY: registry.example.com
-#  REGISTRY_NAME: mumie
-  REPO1: rclone-mount
-  REPO2: smb-mount
-  REPO3: jdownloader
-  REGPATH: $CI_REGISTRY/$CI_PROJECT_PATH
-#  LATEST_VER: mumie/app:latest
-#  MAJOR_VER: mumie/app:2
+# variables:
+  # REGISTRY: registry.example.com
+  # REGISTRY_NAME: mumie
+  # REPO1: rclone-mount
+  # REPO2: smb-mount
+  # REPO3: jdownloader
+  # LATEST_VER: mumie/app:latest
+  # MAJOR_VER: mumie/app:2
 
 stages:
   - build
   - test
   - push
 
-before_script:
-  - echo "starting new job in $REGPATH"
-  - docker info
+# before_script:
+  # - echo "starting new job in $REGPATH"
+  # - docker info
   #- docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
-docker_build_repo1:
-  stage: build
-  image: docker:latest
-  services:
-  - docker:dind
-  script:
-  - echo "$CI_PROJECT_PATH"
-  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-  - docker pull $REGPATH/$REPO1:$CI_COMMIT_REF_SLUG || true
-  - docker build --pull -t $REGPATH/$REPO1:$CI_COMMIT_SHA -t $REGPATH/$REPO1:$CI_COMMIT_REF_SLUG ./$REPO1
-  - docker push $REGPATH/$REPO1:$CI_COMMIT_SHA
-  - docker push $REGPATH/$REPO1:$CI_COMMIT_REF_SLUG
-  only:
-    refs:
-      - master
-      - dev
-    changes:
-      - rclone-mount/**/*
 
-docker_build_repo2:
+# templates
+.docker_build_template:
   stage: build
   image: docker:latest
+  # variables:
+    # REGPATH: $CI_REGISTRY/$CI_PROJECT_PATH
   services:
   - docker:dind
+  before_script:
+  - echo "project $CI_PROJECT_PATH stage $CI_JOB_STAGE"
+  - echo "starting new job for $CI_REGISTRY/$CI_PROJECT_PATH"
   script:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-  - docker pull $REGPATH/$REPO2:$CI_COMMIT_REF_SLUG || true
-  - docker build --pull --cache-from $REGPATH/$REPO2:$CI_COMMIT_REF_SLUG -t $REGPATH/$REPO2:$CI_COMMIT_SHA -t $REGPATH/$REPO2:$CI_COMMIT_REF_SLUG ./$REPO2
-  - docker push $REGPATH/$REPO2:$CI_COMMIT_SHA
-  - docker push $REGPATH/$REPO2:$CI_COMMIT_REF_SLUG
-  only:
-    refs:
-      - master
-      - dev
-    changes:
-      - smb-mount/**/*
+  - docker pull $CI_REGISTRY/$CI_PROJECT_PATH/$REPO:$CI_COMMIT_REF_SLUG || true
+  - docker build --pull -t $CI_REGISTRY/$CI_PROJECT_PATH/$REPO:$CI_COMMIT_SHA -t $CI_REGISTRY/$CI_PROJECT_PATH/$REPO:$CI_COMMIT_REF_SLUG ./$REPO
+  - docker push $CI_REGISTRY/$CI_PROJECT_PATH/$REPO:$CI_COMMIT_SHA
+  - docker push $CI_REGISTRY/$CI_PROJECT_PATH/$REPO:$CI_COMMIT_REF_SLUG
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "dev"'
+      changes:
+        - '${REPO}/**/*'
 
-docker_build_repo3:
-  stage: build
-  image: docker:latest
-  services:
-  - docker:dind
-  script:
-  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-  - docker pull $REGPATH/$REPO3:$CI_COMMIT_REF_SLUG || true
-  - docker build --pull --cache-from $REGPATH/$REPO3:$CI_COMMIT_REF_SLUG -t $REGPATH/$REPO3:$CI_COMMIT_SHA -t $REGPATH/$REPO3:$CI_COMMIT_REF_SLUG ./$REPO3
-  - docker push $REGPATH/$REPO3:$CI_COMMIT_SHA
-  - docker push $REGPATH/$REPO3:$CI_COMMIT_REF_SLUG
-  only:
-    refs:
-      - master
-      - dev
-    changes:
-      - jdownloader/**/*
+
+# jobs
+build:docker_repo01:
+  extends: .docker_build_template
+  variables:
+    REPO: rclone-mount
+
+build:docker_repo02:
+  extends: .docker_build_template
+  variables:
+    REPO: smb-mount
+
+build:docker_repo03:
+  extends: .docker_build_template
+  variables:
+    REPO: jdownloader
+
 
 #docker_build2:
 #  stage: build
 #  script:
 #  - docker info
 #  - docker build -t $LATEST_VER -t $MAJOR_VER .
+
 
 docker_test1:
   stage: test
@@ -95,17 +81,59 @@ docker_test1:
       - master
       - dev
 
-docker_push1:
+
+# docker_push1:
+#   stage: push
+#   image: docker:latest
+#   services:
+#   - docker:dind
+#   script:
+#   - echo "manual job done"
+#   # push image to registry
+#   #- docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+#   only:
+#     refs:
+#       - master
+#       - dev
+#   when: manual
+
+push:dockerhub01:
   stage: push
   image: docker:latest
+  variables:
+    REPO: rclone-mount
   services:
   - docker:dind
   script:
-  - echo "manual job done"
-  # push image to registry
-  #- docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  only:
-    refs:
-      - master
-      - dev
-  when: manual
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  - docker pull $CI_REGISTRY/$CI_PROJECT_PATH/$REPO:$CI_COMMIT_REF_SLUG || true
+  - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_TOKEN $DOCKER_REGISTRY
+  - docker tag $CI_REGISTRY/$CI_PROJECT_PATH/$REPO:$CI_COMMIT_REF_SLUG index.docker.io/$DOCKER_REGISTRY_USER/$REPO:latest
+  - docker push index.docker.io/$DOCKER_REGISTRY_USER/$REPO:latest
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      changes:
+        - '${REPO}/**/*'
+      when: manual
+  needs:
+    - build:docker_repo01
+push:dockerhub02:
+  stage: push
+  image: docker:latest
+  variables:
+    REPO: rclone-mount
+  services:
+  - docker:dind
+  script:
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  - docker pull $CI_REGISTRY/$CI_PROJECT_PATH/$REPO:$CI_COMMIT_REF_SLUG || true
+  - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_TOKEN $DOCKER_REGISTRY
+  - docker tag $CI_REGISTRY/$CI_PROJECT_PATH/$REPO:$CI_COMMIT_REF_SLUG index.docker.io/$DOCKER_REGISTRY_USER/$REPO:$CI_COMMIT_REF_SLUG
+  - docker push index.docker.io/$DOCKER_REGISTRY_USER/$REPO:$CI_COMMIT_REF_SLUG
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+      changes:
+        - '${REPO}/**/*'
+      when: manual
+  needs:
+    - build:docker_repo01
