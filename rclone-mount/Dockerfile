@@ -1,7 +1,7 @@
 FROM alpine:latest
 
-ARG RCLONE_VERSION="v1.55.1"
-ARG OVERLAY_VERSION="v1.22.1.0"
+ARG RCLONE_VERSION="v1.56.0"
+ARG OVERLAY_VERSION="v2.2.0.3"
 ARG OVERLAY_ARCH="amd64"
 
 ENV DEBUG="false" \
@@ -23,7 +23,8 @@ RUN apk --no-cache upgrade \
     "https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${OVERLAY_ARCH}.tar.gz" \
     && curl -o /tmp/s6-overlay.tar.gz.sig -L \
     "https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${OVERLAY_ARCH}.tar.gz.sig" \
-    && curl https://keybase.io/justcontainers/key.asc | gpg --import \
+    # && curl https://keybase.io/justcontainers/key.asc | gpg --import \
+    && gpg --keyserver pgp.surfnet.nl --recv-keys 6101B2783B2FD161 \
     && gpg --verify /tmp/s6-overlay.tar.gz.sig /tmp/s6-overlay.tar.gz \
     && tar xfz /tmp/s6-overlay.tar.gz -C / \
     && echo "Download and compile rclone" \
