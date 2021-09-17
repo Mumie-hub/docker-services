@@ -1,6 +1,6 @@
 #image: gitlab/dind
 
-# variables:
+variables:
   # REGISTRY: registry.example.com
   # REGISTRY_NAME: mumie
   # REPO1: rclone-mount
@@ -8,6 +8,7 @@
   # REPO3: jdownloader
   # LATEST_VER: mumie/app:latest
   # MAJOR_VER: mumie/app:2
+  DOCKER_REGISTRY: "docker.io"
 
 stages:
   - build
@@ -55,6 +56,11 @@ build:docker_repo02:
     REPO: smb-mount
 
 build:docker_repo03:
+  extends: .docker_build_template
+  variables:
+    REPO: sabnzbdvpn
+
+build:docker_repo04:
   extends: .docker_build_template
   variables:
     REPO: jdownloader
@@ -108,8 +114,8 @@ push:dockerhub01:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   - docker pull $CI_REGISTRY/$CI_PROJECT_PATH/$REPO:$CI_COMMIT_REF_SLUG || true
   - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_TOKEN $DOCKER_REGISTRY
-  - docker tag $CI_REGISTRY/$CI_PROJECT_PATH/$REPO:$CI_COMMIT_REF_SLUG index.docker.io/$DOCKER_REGISTRY_USER/$REPO:latest
-  - docker push index.docker.io/$DOCKER_REGISTRY_USER/$REPO:latest
+  - docker tag $CI_REGISTRY/$CI_PROJECT_PATH/$REPO:$CI_COMMIT_REF_SLUG $DOCKER_REGISTRY/$DOCKER_REGISTRY_USER/$REPO:latest
+  - docker push $DOCKER_REGISTRY/$DOCKER_REGISTRY_USER/$REPO:latest
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
       changes:
@@ -128,8 +134,8 @@ push:dockerhub02:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   - docker pull $CI_REGISTRY/$CI_PROJECT_PATH/$REPO:$CI_COMMIT_REF_SLUG || true
   - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_TOKEN $DOCKER_REGISTRY
-  - docker tag $CI_REGISTRY/$CI_PROJECT_PATH/$REPO:$CI_COMMIT_REF_SLUG index.docker.io/$DOCKER_REGISTRY_USER/$REPO:$CI_COMMIT_REF_SLUG
-  - docker push index.docker.io/$DOCKER_REGISTRY_USER/$REPO:$CI_COMMIT_REF_SLUG
+  - docker tag $CI_REGISTRY/$CI_PROJECT_PATH/$REPO:$CI_COMMIT_REF_SLUG $DOCKER_REGISTRY/$DOCKER_REGISTRY_USER/$REPO:$CI_COMMIT_REF_SLUG
+  - docker push $DOCKER_REGISTRY/$DOCKER_REGISTRY_USER/$REPO:$CI_COMMIT_REF_SLUG
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev"'
       changes:
