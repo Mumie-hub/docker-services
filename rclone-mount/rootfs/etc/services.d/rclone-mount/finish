@@ -10,7 +10,6 @@ SERVICE_DIR=/var/run/s6/services
 SERVICE=rclone-mount
 
 checkRclone(){
-#    pgrep rclon[e] > /dev/null
     ps aux | grep '.rclon[e].*'$RemotePath'' | grep -v grep > /dev/null
     return $?
 }

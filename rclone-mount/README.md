@@ -1,6 +1,6 @@
 [rcloneurl]: https://rclone.org
 
-[![rclone.org](https://rclone.org/img/rclone-120x120.png)][rcloneurl]
+[![rclone.org](https://rclone.org/img/logo_on_dark__horizontal_color.svg)][rcloneurl]
 
 Rclone Mount Container
 ---
