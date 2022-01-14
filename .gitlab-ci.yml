@@ -5,20 +5,20 @@ variables:
   # REGISTRY_NAME: mumie
   # LATEST_VER: mumie/app:latest
   # MAJOR_VER: mumie/app:2
-  DOCKER_REGISTRY: "docker.io"
 
 stages:
   - build
-  - test
+  # - test
   - push
+
+
+include: '/.gitlab-ci.docker.yml'
+
 
 # before_script:
   # - echo "starting new job in $REGPATH"
   # - docker info
   #- docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-
-
-include: '/.gitlab-ci.docker.yml'
 
 
 # jobs
@@ -50,19 +50,19 @@ build:jdownloader:
 #  - docker build -t $LATEST_VER -t $MAJOR_VER .
 
 
-docker_test1:
-  stage: test
-  image: docker:latest
-  services:
-  - docker:dind
-  script:
-  - echo "finished"
-  # do some test
-  #- docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  only:
-    refs:
-      - master
-      - dev
+# docker_test1:
+#   stage: test
+#   image: docker:latest
+#   services:
+#   - docker:dind
+#   script:
+#   - echo "finished"
+#   # do some test
+#   #- docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+#   only:
+#     refs:
+#       - master
+#       - dev
 
 
 # docker_push1:

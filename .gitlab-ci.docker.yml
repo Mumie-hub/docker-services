@@ -23,6 +23,8 @@
 .docker_push_template_latest:
   stage: push
   image: docker:latest
+  variables:
+    DOCKER_REGISTRY: "docker.io"
   services:
   - docker:dind
   script:
@@ -40,6 +42,8 @@
 .docker_push_template_dev:
   stage: push
   image: docker:latest
+  variables:
+    DOCKER_REGISTRY: "docker.io"
   services:
   - docker:dind
   script:
