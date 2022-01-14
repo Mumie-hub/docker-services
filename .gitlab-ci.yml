@@ -3,17 +3,17 @@
 variables:
   # REGISTRY: registry.example.com
   # REGISTRY_NAME: mumie
-  # REPO1: rclone-mount
-  # REPO2: smb-mount
-  # REPO3: jdownloader
   # LATEST_VER: mumie/app:latest
   # MAJOR_VER: mumie/app:2
-  DOCKER_REGISTRY: "docker.io"
 
 stages:
   - build
-  - test
+  # - test
   - push
+
+
+include: '/.gitlab-ci.docker.yml'
+
 
 # before_script:
   # - echo "starting new job in $REGPATH"
@@ -21,46 +21,23 @@ stages:
   #- docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
 
-# templates
-.docker_build_template:
-  stage: build
-  image: docker:latest
-  # variables:
-    # REGPATH: $CI_REGISTRY/$CI_PROJECT_PATH
-  services:
-  - docker:dind
-  before_script:
-  - echo "project $CI_PROJECT_PATH stage $CI_JOB_STAGE"
-  - echo "starting new job for $CI_REGISTRY/$CI_PROJECT_PATH"
-  script:
-  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-  - docker pull $CI_REGISTRY/$CI_PROJECT_PATH/$REPO:$CI_COMMIT_REF_SLUG || true
-  - docker build --pull -t $CI_REGISTRY/$CI_PROJECT_PATH/$REPO:$CI_COMMIT_SHA -t $CI_REGISTRY/$CI_PROJECT_PATH/$REPO:$CI_COMMIT_REF_SLUG ./$REPO
-  - docker push $CI_REGISTRY/$CI_PROJECT_PATH/$REPO:$CI_COMMIT_SHA
-  - docker push $CI_REGISTRY/$CI_PROJECT_PATH/$REPO:$CI_COMMIT_REF_SLUG
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "dev"'
-      changes:
-        - '${REPO}/**/*'
-
-
 # jobs
-build:docker_repo01:
+build:rclone-mount:
   extends: .docker_build_template
   variables:
     REPO: rclone-mount
 
-build:docker_repo02:
+build:smb-mount:
   extends: .docker_build_template
   variables:
     REPO: smb-mount
 
-build:docker_repo03:
+build:sabnzbdvpn:
   extends: .docker_build_template
   variables:
     REPO: sabnzbdvpn
 
-build:docker_repo04:
+build:jdownloader:
   extends: .docker_build_template
   variables:
     REPO: jdownloader
@@ -73,19 +50,19 @@ build:docker_repo04:
 #  - docker build -t $LATEST_VER -t $MAJOR_VER .
 
 
-docker_test1:
-  stage: test
-  image: docker:latest
-  services:
-  - docker:dind
-  script:
-  - echo "finished"
-  # do some test
-  #- docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  only:
-    refs:
-      - master
-      - dev
+# docker_test1:
+#   stage: test
+#   image: docker:latest
+#   services:
+#   - docker:dind
+#   script:
+#   - echo "finished"
+#   # do some test
+#   #- docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+#   only:
+#     refs:
+#       - master
+#       - dev
 
 
 # docker_push1:
@@ -103,43 +80,28 @@ docker_test1:
 #       - dev
 #   when: manual
 
-push:dockerhub01:
-  stage: push
-  image: docker:latest
+push:rclone-mount-latest:
+  extends: .docker_push_template_latest
   variables:
     REPO: rclone-mount
-  services:
-  - docker:dind
-  script:
-  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-  - docker pull $CI_REGISTRY/$CI_PROJECT_PATH/$REPO:$CI_COMMIT_REF_SLUG || true
-  - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_TOKEN $DOCKER_REGISTRY
-  - docker tag $CI_REGISTRY/$CI_PROJECT_PATH/$REPO:$CI_COMMIT_REF_SLUG $DOCKER_REGISTRY/$DOCKER_REGISTRY_USER/$REPO:latest
-  - docker push $DOCKER_REGISTRY/$DOCKER_REGISTRY_USER/$REPO:latest
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "master"'
-      changes:
-        - '${REPO}/**/*'
-      when: manual
   needs:
-    - build:docker_repo01
-push:dockerhub02:
-  stage: push
-  image: docker:latest
+    - build:rclone-mount
+push:rclone-mount-dev:
+  extends: .docker_push_template_dev
   variables:
     REPO: rclone-mount
-  services:
-  - docker:dind
-  script:
-  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-  - docker pull $CI_REGISTRY/$CI_PROJECT_PATH/$REPO:$CI_COMMIT_REF_SLUG || true
-  - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_TOKEN $DOCKER_REGISTRY
-  - docker tag $CI_REGISTRY/$CI_PROJECT_PATH/$REPO:$CI_COMMIT_REF_SLUG $DOCKER_REGISTRY/$DOCKER_REGISTRY_USER/$REPO:$CI_COMMIT_REF_SLUG
-  - docker push $DOCKER_REGISTRY/$DOCKER_REGISTRY_USER/$REPO:$CI_COMMIT_REF_SLUG
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "dev"'
-      changes:
-        - '${REPO}/**/*'
-      when: manual
   needs:
-    - build:docker_repo01
+    - build:rclone-mount
+
+push:sabnzbdvpn-latest:
+  extends: .docker_push_template_latest
+  variables:
+    REPO: sabnzbdvpn
+  needs:
+    - build:sabnzbdvpn
+push:sabnzbdvpn-dev:
+  extends: .docker_push_template_dev
+  variables:
+    REPO: sabnzbdvpn
+  needs:
+    - build:sabnzbdvpn
