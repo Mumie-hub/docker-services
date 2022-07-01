@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:focal
 
 ENV LANG="en_US.UTF-8" \
     LANGUAGE="en_US.UTF-8" \
@@ -16,7 +16,7 @@ ENV LANG="en_US.UTF-8" \
     WATCH_DIR=""
 
 RUN apt-get update \
-    && apt-get install -y software-properties-common sudo curl wget nano locales python3-sabyenc python-chardet python3-chardet p7zip-full unzip \
+    && apt-get install -y software-properties-common sudo curl wget nano locales python3-sabyenc python3-chardet p7zip-full unzip \
     && add-apt-repository ppa:jcfp/ppa \
     && add-apt-repository ppa:jcfp/sab-addons \
     && echo "install openvpn and sabnzbdplus packages" \
