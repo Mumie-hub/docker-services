@@ -10,17 +10,17 @@ ENV USER_UID="1002" \
     
 ENV JAVA_HOME=/opt/jdk \
     PATH=${PATH}:/opt/jdk/bin \
-    GLIBC_VERSION=2.31-r0
+    GLIBC_VERSION=2.35-r0
 
-# alpine - openjdk8-jre-base java-jna openjdk8-jre-lib libstdc++  glibc-bin glibc-i18n
-# libstdc++ and glibc-i18n needed for jdownloader building 7zip Package
+# alpine - openjdk8-jre-base libstdc++ glibc-bin glibc-i18n gcompat
+# libstdc++ and glibc-i18n needed for jdownloader building 7zip package
 RUN set -ex \
-    && apk add --no-cache --update wget bash ca-certificates su-exec curl libstdc++ tar openjdk8-jre-base \
-    && wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
-    && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-${GLIBC_VERSION}.apk \
-    && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-bin-${GLIBC_VERSION}.apk \
-    && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-i18n-${GLIBC_VERSION}.apk \
-    && apk add glibc-${GLIBC_VERSION}.apk glibc-bin-${GLIBC_VERSION}.apk glibc-i18n-${GLIBC_VERSION}.apk \
+    && apk add --no-cache --update wget bash ca-certificates su-exec curl libstdc++ tar openjdk8-jre-base gcompat \
+    # && wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
+    # && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-${GLIBC_VERSION}.apk \
+    # && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-bin-${GLIBC_VERSION}.apk \
+    # && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-i18n-${GLIBC_VERSION}.apk \
+    # && apk add glibc-${GLIBC_VERSION}.apk glibc-bin-${GLIBC_VERSION}.apk glibc-i18n-${GLIBC_VERSION}.apk \
 #    && ( /usr/glibc-compat/bin/localedef --force --inputfile POSIX --charmap UTF-8 C.UTF-8 || true ) \
 #    && echo "export $LANG" > /etc/profile.d/locale.sh \
 #    && /usr/glibc-compat/sbin/ldconfig /lib /usr/glibc-compat/lib \
