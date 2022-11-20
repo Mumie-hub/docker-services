@@ -10,9 +10,9 @@ ENV USER_UID="1002" \
     
 ENV JAVA_HOME=/opt/jdk \
     PATH=${PATH}:/opt/jdk/bin \
-    GLIBC_VERSION=2.31-r0
+    GLIBC_VERSION=2.35-r0
 
-# alpine - openjdk8-jre-base java-jna openjdk8-jre-lib libstdc++  glibc-bin glibc-i18n
+# alpine - openjdk8-jre-base libstdc++ glibc-bin glibc-i18n
 # libstdc++ and glibc-i18n needed for jdownloader building 7zip Package
 RUN set -ex \
     && apk add --no-cache --update wget bash ca-certificates su-exec curl libstdc++ tar openjdk8-jre-base \
