@@ -1,4 +1,4 @@
-ARG RCLONE_VERSION="v1.61.1"
+ARG RCLONE_VERSION="v1.62.2"
 ARG OVERLAY_VERSION="v2.2.0.3"
 ARG OVERLAY_ARCH="amd64"
 ARG OVERLAY_KEY="6101B2783B2FD161"
@@ -37,7 +37,7 @@ ENV DEBUG="false" \
     MountCommands="--allow-other --allow-non-empty" \
     UnmountCommands="-u -z"
 
-COPY --from=builder /go/src/github.com/rclone/rclone/rclone /usr/local/sbin/
+COPY --from=builder /go/src/github.com/rclone/rclone/rclone/rclone /usr/local/sbin/
 
 RUN apk --no-cache upgrade \
     && apk add --no-cache --update ca-certificates fuse fuse-dev curl gnupg \
