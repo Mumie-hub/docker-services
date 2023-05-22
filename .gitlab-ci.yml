@@ -1,79 +1,47 @@
 #image: gitlab/dind
 
 variables:
-#  REGISTRY: registry.example.com
-#  REGISTRY_NAME: mumie
-  REPO1: rclone-mount
-  REPO2: smb-mount
-  REPO3: jdownloader
-  REGPATH: $CI_REGISTRY/$CI_PROJECT_PATH
-#  LATEST_VER: mumie/app:latest
-#  MAJOR_VER: mumie/app:2
+  # REGISTRY: registry.example.com
+  # REGISTRY_NAME: mumie
+  # LATEST_VER: mumie/app:latest
+  # MAJOR_VER: mumie/app:2
 
 stages:
   - build
-  - test
+  # - test
   - push
 
-before_script:
-  - echo "starting new job in $REGPATH"
-  - docker info
+
+include: '/.gitlab-ci.docker.yml'
+
+
+# before_script:
+  # - echo "starting new job in $REGPATH"
+  # - docker info
   #- docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
-docker_build_repo1:
-  stage: build
-  image: docker:latest
-  services:
-  - docker:dind
-  script:
-  - echo "$CI_PROJECT_PATH"
-  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-  - docker pull $REGPATH/$REPO1:$CI_COMMIT_REF_SLUG || true
-  - docker build --pull -t $REGPATH/$REPO1:$CI_COMMIT_SHA -t $REGPATH/$REPO1:$CI_COMMIT_REF_SLUG ./$REPO1
-  - docker push $REGPATH/$REPO1:$CI_COMMIT_SHA
-  - docker push $REGPATH/$REPO1:$CI_COMMIT_REF_SLUG
-  only:
-    refs:
-      - master
-      - dev
-    changes:
-      - rclone-mount/**/*
 
-docker_build_repo2:
-  stage: build
-  image: docker:latest
-  services:
-  - docker:dind
-  script:
-  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-  - docker pull $REGPATH/$REPO2:$CI_COMMIT_REF_SLUG || true
-  - docker build --pull --cache-from $REGPATH/$REPO2:$CI_COMMIT_REF_SLUG -t $REGPATH/$REPO2:$CI_COMMIT_SHA -t $REGPATH/$REPO2:$CI_COMMIT_REF_SLUG ./$REPO2
-  - docker push $REGPATH/$REPO2:$CI_COMMIT_SHA
-  - docker push $REGPATH/$REPO2:$CI_COMMIT_REF_SLUG
-  only:
-    refs:
-      - master
-      - dev
-    changes:
-      - smb-mount/**/*
+# jobs
+build:rclone-mount:
+  extends: .docker_build_template
+  variables:
+    REPO: rclone-mount
 
-docker_build_repo3:
-  stage: build
-  image: docker:latest
-  services:
-  - docker:dind
-  script:
-  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-  - docker pull $REGPATH/$REPO3:$CI_COMMIT_REF_SLUG || true
-  - docker build --pull --cache-from $REGPATH/$REPO3:$CI_COMMIT_REF_SLUG -t $REGPATH/$REPO3:$CI_COMMIT_SHA -t $REGPATH/$REPO3:$CI_COMMIT_REF_SLUG ./$REPO3
-  - docker push $REGPATH/$REPO3:$CI_COMMIT_SHA
-  - docker push $REGPATH/$REPO3:$CI_COMMIT_REF_SLUG
-  only:
-    refs:
-      - master
-      - dev
-    changes:
-      - jdownloader/**/*
+build:smb-mount:
+  extends: .docker_build_template
+  variables:
+    REPO: smb-mount
+
+build:sabnzbdvpn:
+  extends: .docker_build_template
+  variables:
+    REPO: sabnzbdvpn
+
+build:jdownloader:
+  extends: .docker_build_template
+  variables:
+    REPO: jdownloader
+
 
 #docker_build2:
 #  stage: build
@@ -81,31 +49,59 @@ docker_build_repo3:
 #  - docker info
 #  - docker build -t $LATEST_VER -t $MAJOR_VER .
 
-docker_test1:
-  stage: test
-  image: docker:latest
-  services:
-  - docker:dind
-  script:
-  - echo "finished"
-  # do some test
-  #- docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  only:
-    refs:
-      - master
-      - dev
 
-docker_push1:
-  stage: push
-  image: docker:latest
-  services:
-  - docker:dind
-  script:
-  - echo "manual job done"
-  # push image to registry
-  #- docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  only:
-    refs:
-      - master
-      - dev
-  when: manual
+# docker_test1:
+#   stage: test
+#   image: docker:latest
+#   services:
+#   - docker:dind
+#   script:
+#   - echo "finished"
+#   # do some test
+#   #- docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+#   only:
+#     refs:
+#       - master
+#       - dev
+
+
+# docker_push1:
+#   stage: push
+#   image: docker:latest
+#   services:
+#   - docker:dind
+#   script:
+#   - echo "manual job done"
+#   # push image to registry
+#   #- docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+#   only:
+#     refs:
+#       - master
+#       - dev
+#   when: manual
+
+push:rclone-mount-latest:
+  extends: .docker_push_template_latest
+  variables:
+    REPO: rclone-mount
+  needs:
+    - build:rclone-mount
+push:rclone-mount-dev:
+  extends: .docker_push_template_dev
+  variables:
+    REPO: rclone-mount
+  needs:
+    - build:rclone-mount
+
+push:sabnzbdvpn-latest:
+  extends: .docker_push_template_latest
+  variables:
+    REPO: sabnzbdvpn
+  needs:
+    - build:sabnzbdvpn
+push:sabnzbdvpn-dev:
+  extends: .docker_push_template_dev
+  variables:
+    REPO: sabnzbdvpn
+  needs:
+    - build:sabnzbdvpn

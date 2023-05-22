@@ -1,11 +1,11 @@
 [rcloneurl]: https://rclone.org
 
-[![rclone.org](https://rclone.org/img/rclone-120x120.png)][rcloneurl]
+[![rclone.org](https://rclone.org/img/logo_on_dark__horizontal_color.svg)][rcloneurl]
 
 Rclone Mount Container
 ---
 
-Lightweight and simple Container Image (`alpine:latest - 160MB`) with compiled rclone (https://github.com/ncw/rclone master). Mount your cloudstorage like google drive inside a container and make it available to other containers like your Plex Server or on your hostsystem (mount namespace on the host is shared). You need a working rclone.conf (from another host or create it inside the container with entrypoint /bin/sh). all rclone remotes can be used.
+Lightweight and simple Container Image (`alpine:latest - 160MB`) with compiled rclone (https://github.com/ncw/rclone). Mount your cloudstorage like google drive inside a container and make it available to other containers like your Plex Server or on your hostsystem (mount namespace on the host is shared). You need a working rclone.conf (from another host or create it inside the container with entrypoint /bin/sh). all rclone remotes can be used.
 
 
 The Container uses S6 Overlay, to handle docker stop/restart ( fusermount -uz $MountPoint is applied on app crashes also) and also preparing the mountpoint.
