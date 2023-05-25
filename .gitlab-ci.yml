@@ -23,25 +23,25 @@ include:
 
 
 # jobs ################################
+build:jdownloader:
+  extends: .kaniko_build_template
+  variables:
+    ENV: jdownloader
+
 build:rclone-mount:
   extends: .kaniko_build_template
   variables:
     ENV: rclone-mount
-
-build:smb-mount:
-  extends: .kaniko_build_template
-  variables:
-    ENV: smb-mount
 
 build:sabnzbdvpn:
   extends: .kaniko_build_template
   variables:
     ENV: sabnzbdvpn
 
-build:jdownloader:
+build:smb-mount:
   extends: .kaniko_build_template
   variables:
-    ENV: jdownloader
+    ENV: smb-mount
 
 
 #docker_build2:
@@ -93,3 +93,10 @@ push:sabnzbdvpn:
     ENV: sabnzbdvpn
   needs:
     - job: build:sabnzbdvpn
+
+push:smb-mount:
+  extends: .crane_push_docker_template
+  variables:
+    ENV: smb-mount
+  needs:
+    - job: build:smb-mount

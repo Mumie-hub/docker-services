@@ -21,7 +21,7 @@ RUN apk add --no-cache --update ca-certificates go git \
     && go build
 
 
-## Image
+# Image
 FROM alpine:latest
 
 ARG OVERLAY_VERSION
