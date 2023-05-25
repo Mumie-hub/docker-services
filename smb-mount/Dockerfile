@@ -31,5 +31,6 @@ COPY rootfs/ /
 ENTRYPOINT ["/init"]
 
 # HEALTHCHECK --interval=5s --timeout=2s --retries=20 CMD /healthcheck.sh || exit 1
+
 # Use this args in docker run
 # --cap-add SYS_ADMIN --cap-add DAC_READ_SEARCH --security-opt apparmor:unconfined
