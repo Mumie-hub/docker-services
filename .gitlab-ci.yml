@@ -1,10 +1,12 @@
-#image: gitlab/dind
-
 variables:
   # REGISTRY: registry.example.com
   # REGISTRY_NAME: mumie
   # LATEST_VER: mumie/app:latest
   # MAJOR_VER: mumie/app:2
+  KUBERNETES_CPU_REQUEST: 500m
+  KUBERNETES_CPU_LIMIT: 1000m
+  KUBERNETES_MEMORY_REQUEST: 512Mi
+  KUBERNETES_MEMORY_LIMIT: 2048Mi
 
 stages:
   - build
