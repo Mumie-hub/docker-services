@@ -1,4 +1,4 @@
-ARG RCLONE_VERSION="v1.62.2"
+ARG IMAGE_VERSION="v1.62.2"
 ARG OVERLAY_VERSION="v2.2.0.3"
 ARG OVERLAY_ARCH="amd64"
 ARG OVERLAY_KEY="6101B2783B2FD161"
@@ -7,7 +7,7 @@ ARG OVERLAY_KEY="6101B2783B2FD161"
 # Builder
 FROM golang:alpine AS builder
 
-ARG RCLONE_VERSION
+ARG IMAGE_VERSION
 
 WORKDIR /go/src/github.com/rclone/rclone/
 
@@ -17,7 +17,7 @@ ENV GOPATH="/go" \
 RUN apk add --no-cache --update ca-certificates go git \
     && git clone https://github.com/rclone/rclone.git \
     && cd rclone \
-    && git checkout tags/${RCLONE_VERSION} \
+    && git checkout tags/${IMAGE_VERSION} \
     && go build
 
 
