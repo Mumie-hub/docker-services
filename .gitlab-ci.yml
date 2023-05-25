@@ -1,5 +1,4 @@
 variables:
-  # REGISTRY: registry.example.com
   # REGISTRY_NAME: mumie
   # LATEST_VER: mumie/app:latest
   # MAJOR_VER: mumie/app:2
@@ -10,7 +9,6 @@ variables:
 
 stages:
   - build
-  # - test
   - push
 
 
@@ -25,7 +23,7 @@ include:
   #- docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
 
-# jobs
+# jobs ################################
 build:rclone-mount:
   extends: .kaniko_build_template
   variables:
@@ -84,28 +82,28 @@ build:jdownloader:
 #       - dev
 #   when: manual
 
-push:rclone-mount-latest:
-  extends: .docker_push_template_latest
+push:rclone-mount:
+  extends: .crane_push_docker_template
   variables:
     ENV: rclone-mount
   needs:
     - build:rclone-mount
-push:rclone-mount-dev:
-  extends: .docker_push_template_dev
-  variables:
-    ENV: rclone-mount
-  needs:
-    - build:rclone-mount
+# push:rclone-mount-dev:
+#   extends: .docker_push_template_dev
+#   variables:
+#     ENV: rclone-mount
+#   needs:
+#     - build:rclone-mount
 
-push:sabnzbdvpn-latest:
-  extends: .docker_push_template_latest
+push:sabnzbdvpn:
+  extends: .crane_push_docker_template
   variables:
     ENV: sabnzbdvpn
   needs:
     - build:sabnzbdvpn
-push:sabnzbdvpn-dev:
-  extends: .docker_push_template_dev
-  variables:
-    ENV: sabnzbdvpn
-  needs:
-    - build:sabnzbdvpn
+# push:sabnzbdvpn-dev:
+#   extends: .docker_push_template_dev
+#   variables:
+#     ENV: sabnzbdvpn
+#   needs:
+#     - build:sabnzbdvpn
