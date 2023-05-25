@@ -1,10 +1,12 @@
-#image: gitlab/dind
-
 variables:
   # REGISTRY: registry.example.com
   # REGISTRY_NAME: mumie
   # LATEST_VER: mumie/app:latest
   # MAJOR_VER: mumie/app:2
+  KUBERNETES_CPU_REQUEST: 500m
+  KUBERNETES_CPU_LIMIT: 1500m
+  KUBERNETES_MEMORY_REQUEST: 1024Mi
+  KUBERNETES_MEMORY_LIMIT: 3072Mi
 
 stages:
   - build
@@ -12,7 +14,9 @@ stages:
   - push
 
 
-include: '/.gitlab-ci.docker.yml'
+include:
+  - '/.gitlab-ci.docker.yml'
+  - '/.gitlab-ci.kaniko.yml'
 
 
 # before_script:
@@ -23,24 +27,24 @@ include: '/.gitlab-ci.docker.yml'
 
 # jobs
 build:rclone-mount:
-  extends: .docker_build_template
+  extends: .kaniko_build_template
   variables:
-    REPO: rclone-mount
+    ENV: rclone-mount
 
 build:smb-mount:
-  extends: .docker_build_template
+  extends: .kaniko_build_template
   variables:
-    REPO: smb-mount
+    ENV: smb-mount
 
 build:sabnzbdvpn:
-  extends: .docker_build_template
+  extends: .kaniko_build_template
   variables:
-    REPO: sabnzbdvpn
+    ENV: sabnzbdvpn
 
 build:jdownloader:
-  extends: .docker_build_template
+  extends: .kaniko_build_template
   variables:
-    REPO: jdownloader
+    ENV: jdownloader
 
 
 #docker_build2:
@@ -83,25 +87,25 @@ build:jdownloader:
 push:rclone-mount-latest:
   extends: .docker_push_template_latest
   variables:
-    REPO: rclone-mount
+    ENV: rclone-mount
   needs:
     - build:rclone-mount
 push:rclone-mount-dev:
   extends: .docker_push_template_dev
   variables:
-    REPO: rclone-mount
+    ENV: rclone-mount
   needs:
     - build:rclone-mount
 
 push:sabnzbdvpn-latest:
   extends: .docker_push_template_latest
   variables:
-    REPO: sabnzbdvpn
+    ENV: sabnzbdvpn
   needs:
     - build:sabnzbdvpn
 push:sabnzbdvpn-dev:
   extends: .docker_push_template_dev
   variables:
-    REPO: sabnzbdvpn
+    ENV: sabnzbdvpn
   needs:
     - build:sabnzbdvpn

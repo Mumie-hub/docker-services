@@ -1,0 +1,37 @@
+.kaniko_build_template:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  variables:
+    VERSION_FILE: version
+  before_script:
+    - if [ -e "$ENV/$VERSION_FILE" ];
+      then ARG_IMAGE_VERSION=$(grep -E -o "(.*)" ${ENV}/${VERSION_FILE} | cut -d\" -f2);
+      else ARG_IMAGE_VERSION="latest";
+      fi
+    - echo $ARG_IMAGE_VERSION
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+  script:
+    - if [ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ];
+      then /kaniko/executor --context $CI_PROJECT_DIR/$ENV --dockerfile Dockerfile --build-arg IMAGE_VERSION=$ARG_IMAGE_VERSION --destination $CI_REGISTRY_IMAGE/$ENV:$ARG_IMAGE_VERSION --destination $CI_REGISTRY_IMAGE/$ENV:latest;
+      else /kaniko/executor --context $CI_PROJECT_DIR/$ENV --dockerfile Dockerfile --destination $CI_REGISTRY_IMAGE/$ENV:$CI_COMMIT_REF_SLUG;
+      fi
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "dev"'
+      changes:
+        - '${ENV}/**/*'
+
+.crane_push_docker_template:
+  stage: push
+  image:
+    name: gcr.io/go-containerregistry/crane:debug
+    entrypoint: [""]
+  variables:
+    GIT_STRATEGY: none
+    DOCKER_REGISTRY: "docker.io"
+  before_script:
+    - crane auth login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - crane auth login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_TOKEN $DOCKER_REGISTRY
+  script:
+    - crane cp $CI_REGISTRY_IMAGE/$ENV:$IMAGE_TAG $DOCKER_REGISTRY/$DOCKER_REGISTRY_USER/$ENV:latest
