@@ -1,5 +1,4 @@
 variables:
-  # REGISTRY_NAME: mumie
   # LATEST_VER: mumie/app:latest
   # MAJOR_VER: mumie/app:2
   KUBERNETES_CPU_REQUEST: 500m
@@ -66,7 +65,6 @@ build:jdownloader:
 #       - master
 #       - dev
 
-
 # docker_push1:
 #   stage: push
 #   image: docker:latest
@@ -86,24 +84,16 @@ push:rclone-mount:
   extends: .crane_push_docker_template
   variables:
     ENV: rclone-mount
-  needs:
-    - build:rclone-mount
 # push:rclone-mount-dev:
 #   extends: .docker_push_template_dev
 #   variables:
 #     ENV: rclone-mount
-#   needs:
-#     - build:rclone-mount
 
 push:sabnzbdvpn:
   extends: .crane_push_docker_template
   variables:
     ENV: sabnzbdvpn
-  needs:
-    - build:sabnzbdvpn
 # push:sabnzbdvpn-dev:
 #   extends: .docker_push_template_dev
 #   variables:
 #     ENV: sabnzbdvpn
-#   needs:
-#     - build:sabnzbdvpn
