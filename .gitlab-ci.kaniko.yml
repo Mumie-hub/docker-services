@@ -25,7 +25,7 @@
 .crane_push_docker_template:
   stage: push
   image:
-    name: "gcr.io/go-containerregistry/crane:v0.15.2"
+    name: "gcr.io/go-containerregistry/crane:debug"
     entrypoint: [""]
   variables:
     # GIT_STRATEGY: none
