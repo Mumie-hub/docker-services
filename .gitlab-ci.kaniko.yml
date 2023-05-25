@@ -1,7 +1,7 @@
 .kaniko_build_template:
   stage: build
   image:
-    name: gcr.io/kaniko-project/executor:debug
+    name: gcr.io/kaniko-project/executor:v1.10.0
     entrypoint: [""]
   variables:
     VERSION_FILE: version
@@ -25,7 +25,7 @@
 .crane_push_docker_template:
   stage: push
   image:
-    name: gcr.io/go-containerregistry/crane:debug
+    name: gcr.io/go-containerregistry/crane:v0.15.2
     entrypoint: [""]
   variables:
     # GIT_STRATEGY: none
