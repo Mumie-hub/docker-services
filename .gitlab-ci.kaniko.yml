@@ -15,7 +15,7 @@
   script:
     - if [ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ];
       then /kaniko/executor --context $CI_PROJECT_DIR/$ENV --dockerfile Dockerfile --build-arg IMAGE_VERSION=$ARG_IMAGE_VERSION --destination $CI_REGISTRY_IMAGE/$ENV:$ARG_IMAGE_VERSION --destination $CI_REGISTRY_IMAGE/$ENV:latest;
-      else /kaniko/executor --context $CI_PROJECT_DIR/$ENV --dockerfile Dockerfile --destination $CI_REGISTRY_IMAGE/$ENV:$CI_COMMIT_REF_SLUG;
+      else /kaniko/executor --context $CI_PROJECT_DIR/$ENV --dockerfile Dockerfile --build-arg IMAGE_VERSION=$ARG_IMAGE_VERSION --destination $CI_REGISTRY_IMAGE/$ENV:$CI_COMMIT_REF_SLUG;
       fi
   rules:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "dev"'
@@ -30,8 +30,21 @@
   variables:
     GIT_STRATEGY: none
     DOCKER_REGISTRY: "docker.io"
+    VERSION_FILE: version
   before_script:
+    - if [ -e "$ENV/$VERSION_FILE" ];
+      then ARG_IMAGE_VERSION=$(grep -E -o "(.*)" ${ENV}/${VERSION_FILE} | cut -d\" -f2);
+      else ARG_IMAGE_VERSION="latest";
+      fi
+    - echo $ARG_IMAGE_VERSION
     - crane auth login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - crane auth login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_TOKEN $DOCKER_REGISTRY
   script:
-    - crane cp $CI_REGISTRY_IMAGE/$ENV:$IMAGE_TAG $DOCKER_REGISTRY/$DOCKER_REGISTRY_USER/$ENV:latest
+    - if [ "$ARG_IMAGE_VERSION" == "latest" ];
+      then crane copy $CI_REGISTRY_IMAGE/$ENV:$ARG_IMAGE_VERSION $DOCKER_REGISTRY/$DOCKER_REGISTRY_USER/$ENV:latest;
+      else crane copy $CI_REGISTRY_IMAGE/$ENV:$ARG_IMAGE_VERSION $DOCKER_REGISTRY/$DOCKER_REGISTRY_USER/$ENV:$ARG_IMAGE_VERSION && crane copy $CI_REGISTRY_IMAGE/$ENV:$ARG_IMAGE_VERSION $DOCKER_REGISTRY/$DOCKER_REGISTRY_USER/$ENV:latest;
+      fi
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      changes:
+        - '${ENV}/**/*'
