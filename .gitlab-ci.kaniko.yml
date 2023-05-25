@@ -28,7 +28,7 @@
     name: gcr.io/go-containerregistry/crane:debug
     entrypoint: [""]
   variables:
-    GIT_STRATEGY: none
+    # GIT_STRATEGY: none
     DOCKER_REGISTRY: "docker.io"
     VERSION_FILE: version
   before_script:

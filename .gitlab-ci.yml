@@ -84,16 +84,12 @@ push:rclone-mount:
   extends: .crane_push_docker_template
   variables:
     ENV: rclone-mount
-# push:rclone-mount-dev:
-#   extends: .docker_push_template_dev
-#   variables:
-#     ENV: rclone-mount
+  needs:
+    - job: build:rclone-mount
 
 push:sabnzbdvpn:
   extends: .crane_push_docker_template
   variables:
     ENV: sabnzbdvpn
-# push:sabnzbdvpn-dev:
-#   extends: .docker_push_template_dev
-#   variables:
-#     ENV: sabnzbdvpn
+  needs:
+    - job: build:sabnzbdvpn
