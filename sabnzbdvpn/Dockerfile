@@ -1,5 +1,8 @@
 FROM ubuntu:focal
 
+ARG DUMB_INIT_VERSION="1.2.5"
+ARG DUMB_INIT_ARCH="amd64"
+
 ENV LANG="en_US.UTF-8" \
     LANGUAGE="en_US.UTF-8" \
     LC_ALL="en_US.UTF-8" \
@@ -22,7 +25,7 @@ RUN apt-get update \
     && echo "install openvpn and sabnzbdplus packages" \
     && apt-get install -y openvpn sabnzbdplus par2-tbb \
     && locale-gen en_US.UTF-8 \
-    && curl -sLO https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_amd64.deb \
+    && curl -sLO https://github.com/Yelp/dumb-init/releases/download/v${DUMB_INIT_VERSION}/dumb-init_${DUMB_INIT_VERSION}_${DUMB_INIT_ARCH}.deb \
     && dpkg -i dumb-init_*.deb \
     && rm -rf dumb-init_*.deb \
     && echo "cleanup tasks" \
@@ -32,9 +35,6 @@ RUN apt-get update \
     && mkdir -p /home/${USER_NAME} \
     && useradd -u ${PUID} -U -d /home/${USER_NAME} -s /bin/false ${USER_NAME} \
     && usermod -G users ${USER_NAME}
-
-    # deprecated and modified from other github repo
-    #&& printf "USER=root\nHOST=0.0.0.0\nPORT=8080\nCONFIG=/config\n" > /etc/default/sabnzbdplus \
 
 ADD openvpn/ /etc/openvpn/
 ADD scripts/ /scripts/
