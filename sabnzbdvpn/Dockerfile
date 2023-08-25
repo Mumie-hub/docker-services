@@ -1,4 +1,4 @@
-FROM ubuntu:jammy
+FROM ubuntu:focal
 
 ARG DUMB_INIT_VERSION="1.2.5"
 ARG DUMB_INIT_ARCH="amd64"
