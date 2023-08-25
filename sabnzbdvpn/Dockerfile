@@ -25,7 +25,7 @@ RUN apt-get update \
     && echo "install openvpn and sabnzbdplus packages" \
     && apt-get install -y openvpn sabnzbdplus par2-tbb \
     && locale-gen en_US.UTF-8 \
-    && curl -sLO "https://github.com/Yelp/dumb-init/releases/download/v${OVERLAY_VERSION}/dumb-init_${OVERLAY_VERSION}_${OVERLAY_ARCH}.deb" \
+    && curl -sLO https://github.com/Yelp/dumb-init/releases/download/v${DUMB_INIT_VERSION}/dumb-init_${DUMB_INIT_VERSION}_${DUMB_INIT_ARCH}.deb \
     && dpkg -i dumb-init_*.deb \
     && rm -rf dumb-init_*.deb \
     && echo "cleanup tasks" \
