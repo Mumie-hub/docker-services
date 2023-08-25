@@ -23,4 +23,4 @@ add:
 "password" : "yourpassword"
 }
 
-(dont forget the , on each end of entrys except the last entry)
+(dont forget the , on each end of the entries except the last entry)
