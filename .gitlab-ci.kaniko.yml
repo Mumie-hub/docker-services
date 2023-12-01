@@ -1,7 +1,7 @@
 .kaniko_build_template:
   stage: build
   image:
-    name: "gcr.io/kaniko-project/executor:v1.10.0-debug"
+    name: "gcr.io/kaniko-project/executor:v1.19.0-debug"
     entrypoint: [""]
   variables:
     VERSION_FILE: version
