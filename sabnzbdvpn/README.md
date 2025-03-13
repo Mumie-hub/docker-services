@@ -10,7 +10,7 @@ docker run -d --name sabnzbdvpn \
             -v /host/storage/path:/config \
             -v /path/to/openvpnconfigdir:/etc/openvpn/custom
             -v /etc/localtime:/etc/localtime:ro \
-            -e "LOCAL_NETWORK=192.168.0.0/24" \
+            -e "LOCAL_NETWORKS=192.168.0.0/24" \
             -p 8080:8080 \
             mumiehub/sabnzbdvpn
 ```
@@ -31,7 +31,7 @@ docker run -d --name sabnzbdvpn \
 | Variable | Function | Example |
 |----------|----------|---------|
 |`OPENVPN_OPTS` | Will be passed to OpenVPN on startup | See [OpenVPN doc](https://openvpn.net/index.php/open-source/documentation/manuals/65-openvpn-20x-manpage.html) |
-|`LOCAL_NETWORK` | Sets the local network that should have access to the GUI | `LOCAL_NETWORK=192.168.0.0/24`|
+|`LOCAL_NETWORKS` | Sets the local network that should have access to the GUI | `LOCAL_NETWORKS=192.168.0.0/24,192.168.1.0/24`|
 
 
 #### User configuration options
@@ -46,11 +46,11 @@ By default OpenVPN will run as the root user and SABnzbd will run as user abc `1
 
 ## Access the WebUI of SABnzbd
 
-If you set `LOCAL_NETWORK` correctly, the WebUI of SABnzbd should be at http://containerhost:8080. If its not responding, there might be an error with your 
-`LOCAL_NETWORK` subnet settings.
+If you set `LOCAL_NETWORKS` correctly, the WebUI of SABnzbd should be at http://containerhost:8080. If its not responding, there might be an error with your 
+`LOCAL_NETWORKS` subnet settings.
 
 ### How to fix this:
-The container supports the `LOCAL_NETWORK` environment variable. For instance if your local network uses the subnet 192.168.0.0/24 you should pass `-e LOCAL_NETWORK=192.168.0.0/24`. It must match your subnet, else your traffic will be "non-local" traffic and therefore be routed out through the VPN interface.
+The container supports the `LOCAL_NETWORKS` environment variable. For instance if your local network uses the subnet 192.168.0.0/24 you should pass `-e LOCAL_NETWORKS=192.168.0.0/24,192.168.1.0/24`. It must match your subnet and your server subnet, else your traffic will be "non-local" traffic and therefore be routed out through the VPN interface.
 
 Alternatively you can reverse proxy the traffic through another container, as that container would be in the docker range. 
 Nginx with proxypass config.
