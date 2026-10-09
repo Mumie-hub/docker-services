@@ -1,7 +1,7 @@
 .kaniko_build_template:
   stage: build
   image:
-    name: "gcr.io/kaniko-project/executor:v1.23.2-debug"
+    name: "gcr.io/kaniko-project/executor:v1.24.0-debug"
     entrypoint: [""]
   variables:
     VERSION_FILE: version
@@ -14,8 +14,8 @@
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
   script:
     - if [ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ];
-      then /kaniko/executor --context $CI_PROJECT_DIR/$ENV --dockerfile Dockerfile --build-arg IMAGE_VERSION=$ARG_IMAGE_VERSION --destination $CI_REGISTRY_IMAGE/$ENV:$ARG_IMAGE_VERSION --destination $CI_REGISTRY_IMAGE/$ENV:latest;
-      else /kaniko/executor --context $CI_PROJECT_DIR/$ENV --dockerfile Dockerfile --build-arg IMAGE_VERSION=$ARG_IMAGE_VERSION --destination $CI_REGISTRY_IMAGE/$ENV:$CI_COMMIT_REF_SLUG;
+      then /kaniko/executor --context $CI_PROJECT_DIR/$ENV --dockerfile Dockerfile --build-arg IMAGE_VERSION=$ARG_IMAGE_VERSION --snapshot-mode=redo --compressed-caching=false --destination $CI_REGISTRY_IMAGE/$ENV:$ARG_IMAGE_VERSION --destination $CI_REGISTRY_IMAGE/$ENV:latest;
+      else /kaniko/executor --context $CI_PROJECT_DIR/$ENV --dockerfile Dockerfile --build-arg IMAGE_VERSION=$ARG_IMAGE_VERSION --snapshot-mode=redo --compressed-caching=false --destination $CI_REGISTRY_IMAGE/$ENV:$CI_COMMIT_REF_SLUG;
       fi
   rules:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "dev"'
