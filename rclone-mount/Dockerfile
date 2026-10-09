@@ -32,18 +32,22 @@ ARG OVERLAY_KEY
 ARG TARGETARCH
 
 ENV DEBUG="false" \
-    AccessFolder="/mnt" \
     RemotePath="mediaefs:" \
     MountPoint="/mnt/mediaefs" \
     ConfigDir="/config" \
     ConfigName=".rclone.conf" \
     MountCommands="--allow-other --allow-non-empty" \
-    UnmountCommands="-u -z"
+    UnmountCommands="-u -z" \
+    AutoUpgrade="false" \
+    S6_BEHAVIOUR_IF_STAGE2_FAILS="2" \
+    S6_KILL_FINISH_MAXTIME="6000" \
+    S6_SERVICES_GRACETIME="1000" \
+    S6_KILL_GRACETIME="1000"
 
 COPY --from=builder /go/src/github.com/rclone/rclone/rclone/rclone /usr/local/sbin/
 
 RUN apk --no-cache upgrade \
-    && apk add --no-cache --update ca-certificates fuse3 fuse fuse-dev curl gnupg \
+    && apk add --no-cache --update ca-certificates fuse3 fuse curl gnupg \
     && case "${TARGETARCH:-amd64}" in \
         "amd64") OVERLAY_ARCH="amd64" ;; \
         "arm64") OVERLAY_ARCH="aarch64" ;; \
@@ -65,9 +69,11 @@ COPY rootfs/ /
 
 VOLUME ["/mnt"]
 
+HEALTHCHECK --interval=60s --timeout=10s --start-period=30s --retries=3 CMD ["/healthcheck.sh"]
+
 ENTRYPOINT ["/init"]
 
 # Use this docker Options in run
-# --cap-add SYS_ADMIN --device /dev/fuse --security-opt apparmor:unconfined
+# --cap-add SYS_ADMIN --device /dev/fuse --security-opt apparmor=unconfined
 # -v /path/to/config/.rclone.conf:/config/.rclone.conf
 # -v /mnt/mediaefs:/mnt/mediaefs:shared

@@ -1,16 +1,14 @@
 #!/usr/bin/with-contenv sh
 
-#set -x
+. /etc/colors.sh
 
-source /etc/colors.sh
+PREFIX="[services.d] [rclone-mount]-$(s6-basename "${0}"):"
 
-PREFFIX="[services.d] [rclone-mount]-$(s6-basename ${0}):"
+echo -e "${PREFIX} ${Green}starting rclone mount $(date +%Y.%m.%d-%T)${Color_Off}"
 
-echo -e "${PREFFIX} ${Green}starting rclone mount $(date +%Y.%m.%d-%T)${Color_Off}"
-
-## ECHO DEBUG
-if [ "$DEBUG" = true ]; then
-    echo -e "${PREFFIX} [DEBUG] command: /usr/local/sbin/rclone --config $ConfigPath mount $RemotePath $MountPoint $MountCommands"
+if [ "${DEBUG}" = "true" ]; then
+    echo -e "${PREFIX} [DEBUG] command: /usr/local/sbin/rclone --config ${ConfigPath} mount ${RemotePath} ${MountPoint} ${MountCommands}"
 fi
 
-/usr/local/sbin/rclone --config $ConfigPath mount $RemotePath $MountPoint $MountCommands
+# exec so s6 supervises and signals rclone directly; MountCommands is left unquoted to split into flags
+exec /usr/local/sbin/rclone --config "${ConfigPath}" mount "${RemotePath}" "${MountPoint}" ${MountCommands}
