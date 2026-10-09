@@ -31,6 +31,10 @@
     # GIT_STRATEGY: none
     DOCKER_REGISTRY: "docker.io"
     VERSION_FILE: version
+    KUBERNETES_CPU_REQUEST: 100m
+    KUBERNETES_CPU_LIMIT: 500m
+    KUBERNETES_MEMORY_REQUEST: 128Mi
+    KUBERNETES_MEMORY_LIMIT: 512Mi
   before_script:
     - if [ -e "$ENV/$VERSION_FILE" ];
       then ARG_IMAGE_VERSION=$(grep -E -o "(.*)" ${ENV}/${VERSION_FILE} | cut -d\" -f2);
