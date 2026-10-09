@@ -41,8 +41,9 @@ ENV DEBUG="false" \
     UnmountCommands="-u -z" \
     AutoUpgrade="false" \
     S6_BEHAVIOUR_IF_STAGE2_FAILS="2" \
-    S6_KILL_FINISH_MAXTIME="20000" \
-    S6_SERVICES_GRACETIME="5000"
+    S6_KILL_FINISH_MAXTIME="6000" \
+    S6_SERVICES_GRACETIME="1000" \
+    S6_KILL_GRACETIME="1000"
 
 COPY --from=builder /go/src/github.com/rclone/rclone/rclone/rclone /usr/local/sbin/
 
@@ -74,6 +75,6 @@ HEALTHCHECK --interval=60s --timeout=10s --start-period=30s --retries=3 CMD ["/h
 ENTRYPOINT ["/init"]
 
 # Use this docker Options in run
-# --cap-add SYS_ADMIN --device /dev/fuse --security-opt apparmor:unconfined --stop-timeout 30
+# --cap-add SYS_ADMIN --device /dev/fuse --security-opt apparmor:unconfined
 # -v /path/to/config/.rclone.conf:/config/.rclone.conf
 # -v /mnt/mediaefs:/mnt/mediaefs:shared

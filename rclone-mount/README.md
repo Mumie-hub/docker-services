@@ -12,7 +12,6 @@ The Container uses S6 Overlay, to handle docker stop/restart ( fusermount -uz $M
 
     docker run -d --name rclone-mount \
         --restart=unless-stopped \
-        --stop-timeout 30 \
         --cap-add SYS_ADMIN \
         --device /dev/fuse \
         --security-opt apparmor:unconfined \
@@ -43,11 +42,11 @@ The Container uses S6 Overlay, to handle docker stop/restart ( fusermount -uz $M
 | `UnmountCommands`="-u -z"                         |     | default unmount commands                                                                                                          |
 | `AccessFolder`="/mnt"                             |     | access with --volumes-from rclone-mount, changes of AccessFolder have no impact because its the exposed folder in the dockerfile. |
 | `AutoUpgrade`="false"                             |     | set to `true` to run `apk upgrade` on every container start                                                                       |
-| `S6_KILL_FINISH_MAXTIME`="20000"                  |     | time in ms rclone gets to unmount on shutdown, keep the docker stop timeout above this value + 8s                                 |
+| `S6_KILL_FINISH_MAXTIME`="6000"                   |     | time in ms rclone gets to unmount on shutdown, keep the docker stop timeout about 3s above this value                             |
 
 ## Shutdown
 
-rclone needs time to unmount cleanly and upload pending writes. Give the container a stop timeout at least 8s longer than `S6_KILL_FINISH_MAXTIME` (`--stop-timeout 30` or `stop_grace_period: 30s` in compose), otherwise docker kills it and the mount stays behind on the host.
+rclone needs time to unmount cleanly. The defaults fit into the docker default stop timeout of 10s. If rclone needs longer (e.g. pending uploads), raise `S6_KILL_FINISH_MAXTIME` and give the container a stop timeout about 3s above it (e.g. `-e S6_KILL_FINISH_MAXTIME=20000 --stop-timeout 23` or `stop_grace_period: 23s` in compose), otherwise docker kills it and the mount stays behind on the host.
 
 ## Healthcheck
 

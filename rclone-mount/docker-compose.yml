@@ -2,7 +2,6 @@ version: '2'
 services:
   mount-rclone01:
     image: mumiehub/rclone-mount:latest
-    stop_grace_period: 30s
 #    privileged: true
     cap_add:
     - SYS_ADMIN
