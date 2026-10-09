@@ -12,6 +12,7 @@ The Container uses S6 Overlay, to handle docker stop/restart ( fusermount -uz $M
 
     docker run -d --name rclone-mount \
         --restart=unless-stopped \
+        --stop-timeout 45 \
         --cap-add SYS_ADMIN \
         --device /dev/fuse \
         --security-opt apparmor:unconfined \
@@ -41,6 +42,16 @@ The Container uses S6 Overlay, to handle docker stop/restart ( fusermount -uz $M
 | `MountCommands`="--allow-other --allow-non-empty" |     | default mount commands, (if you not parse anything, defaults will be used)                                                        |
 | `UnmountCommands`="-u -z"                         |     | default unmount commands                                                                                                          |
 | `AccessFolder`="/mnt"                             |     | access with --volumes-from rclone-mount, changes of AccessFolder have no impact because its the exposed folder in the dockerfile. |
+| `AutoUpgrade`="false"                             |     | set to `true` to run `apk upgrade` on every container start                                                                       |
+| `S6_KILL_FINISH_MAXTIME`="30000"                  |     | time in ms rclone gets to unmount on shutdown, keep the docker stop timeout above this value                                      |
+
+## Shutdown
+
+rclone needs time to unmount cleanly and upload pending writes. Give the container a stop timeout longer than `S6_KILL_FINISH_MAXTIME` (`--stop-timeout 45` or `stop_grace_period: 45s` in compose), otherwise docker kills it and the mount stays behind on the host. A stale mount from an unclean shutdown is removed automatically on the next start.
+
+## Healthcheck
+
+The image reports unhealthy when the mount is missing or rclone crashed and left a dead mount behind.
 
 ## Use your own MountCommands with:
 

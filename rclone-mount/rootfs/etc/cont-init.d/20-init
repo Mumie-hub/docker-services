@@ -1,50 +1,31 @@
 #!/usr/bin/with-contenv sh
 
-source /etc/colors.sh
+. /etc/colors.sh
 
-PREFFIX="[cont-init.d] $(s6-basename ${0}):"
+PREFIX="[cont-init.d] $(s6-basename "${0}"):"
 
-#ENV
-OS=""
-ConfigPath=""
+# strip trailing slashes, otherwise MountPoint never matches the entries in /proc/mounts
+while [ "${MountPoint}" != "${MountPoint%/}" ]; do
+    MountPoint="${MountPoint%/}"
+done
 
-#Functions
-DetectOS(){
-  if [ -e /etc/alpine-release ]; then
-    OS="alpine"
-  elif [ -e /etc/os-release ]; then
-    if /bin/grep -q "NAME=\"Ubuntu\"" /etc/os-release ; then 
-      OS="ubuntu"
-    fi
-  fi
-}
+if [ -z "${MountPoint}" ]; then
+    echo -e "${PREFIX} ${Red}MountPoint must not be empty or /[ERROR]${Color_Off}"
+    exit 1
+fi
 
-AutoUpgrade(){
-  if [ "${OS}" == "alpine" ]; then
-      /sbin/apk --no-cache upgrade
-      /bin/rm -rf /var/cache/apk/*
-  elif [ "${OS}" == "ubuntu" ]; then
-      export DEBIAN_FRONTEND=noninteractive
-      /usr/bin/apt-get update
-      /usr/bin/apt-get -y --no-install-recommends dist-upgrade
-      /usr/bin/apt-get -y autoclean
-      /usr/bin/apt-get -y clean 
-      /usr/bin/apt-get -y autoremove
-      /bin/rm -rf /var/lib/apt/lists/*
-  fi
-}
+printf '%s' "${MountPoint}" > /var/run/s6/container_environment/MountPoint
+printf '%s' "${ConfigDir}/${ConfigName}" > /var/run/s6/container_environment/ConfigPath
 
-#fix Mountpoint Syntax
-#remove / at the end #todo
-
-#create folders
 mkdir -p \
-  $MountPoint \
-  $ConfigDir
+    "${MountPoint}" \
+    "${ConfigDir}"
 
-#export ConfigPath="$ConfigDir/$ConfigName env"
-printf "$ConfigDir/$ConfigName" > /var/run/s6/container_environment/ConfigPath
+if [ "${AutoUpgrade}" = "true" ]; then
+    echo -e "${PREFIX} ${Blue}installing system updates${Color_Off}"
+    if ! apk --no-cache upgrade; then
+        echo -e "${PREFIX} ${Yellow}system update failed, continuing with installed packages${Color_Off}"
+    fi
+fi
 
-echo -e "${PREFFIX} ${Blue}installing system updates${Color_Off}"
-DetectOS
-AutoUpgrade
+exit 0
