@@ -17,10 +17,10 @@ ENV GOPATH="/go" \
     GOMEMLIMIT="4GiB"
 
 RUN apk add --no-cache --update ca-certificates go git \
-    && git clone https://github.com/rclone/rclone.git \
+    && git clone --depth 1 --branch ${IMAGE_VERSION} https://github.com/rclone/rclone.git \
     && cd rclone \
-    && git checkout tags/${IMAGE_VERSION} \
-    && go build -p 2
+    && go build -p 2 \
+    && rm -rf /root/.cache /go/pkg .git
 
 
 # Image
