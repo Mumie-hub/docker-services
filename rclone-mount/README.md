@@ -4,7 +4,7 @@
 
 ## Rclone Mount Container
 
-Lightweight and simple Container Image (`alpine:latest - 58MB`) with compiled rclone (https://github.com/ncw/rclone). Mount your cloud storage like google drive inside a container and make it available to other containers like your Plex Server or on your hostsystem (mount namespace on the host is shared). You need a working rclone.conf (from another host or create it inside the container with entrypoint /bin/sh). all rclone remotes can be used.
+Lightweight and simple Container Image (`alpine:latest - 77 MiB`) with compiled rclone (https://github.com/rclone/rclone). Mount your cloud storage like google drive inside a container and make it available to other containers like your Plex Server or on your hostsystem (mount namespace on the host is shared). You need a working rclone.conf (from another host or create it inside the container with entrypoint /bin/sh). all rclone remotes can be used.
 
 The Container uses S6 Overlay, to handle docker stop/restart ( fusermount -uz $MountPoint is applied on app crashes also) and also preparing the mountpoint.
 
@@ -14,7 +14,7 @@ The Container uses S6 Overlay, to handle docker stop/restart ( fusermount -uz $M
         --restart=unless-stopped \
         --cap-add SYS_ADMIN \
         --device /dev/fuse \
-        --security-opt apparmor:unconfined \
+        --security-opt apparmor=unconfined \
         -e RemotePath="mediaefs:" \
         -e MountCommands="--allow-other --allow-non-empty" \
         -v /path/to/config:/config \
@@ -23,7 +23,7 @@ The Container uses S6 Overlay, to handle docker stop/restart ( fusermount -uz $M
 
 > mandatory docker commands:
 
-- --cap-add SYS_ADMIN --device /dev/fuse --security-opt apparmor:unconfined
+- --cap-add SYS_ADMIN --device /dev/fuse --security-opt apparmor=unconfined
 
 > needed volume mappings:
 
@@ -38,7 +38,7 @@ The Container uses S6 Overlay, to handle docker stop/restart ( fusermount -uz $M
 | `MountPoint`="/mnt/mediaefs"                      |     | #INSIDE Container: needs to match mapping -v /host/mount/point:`/mnt/mediaefs:shared`                                             |
 | `ConfigDir`="/config"                             |     | #INSIDE Container: -v /path/to/config:/config                                                                                     |
 | `ConfigName`=".rclone.conf"                       |     | #INSIDE Container: /config/.rclone.conf                                                                                           |
-| `MountCommands`="--allow-other --allow-non-empty" |     | default mount commands, (if you not parse anything, defaults will be used)                                                        |
+| `MountCommands`="--allow-other --allow-non-empty" |     | default mount commands (used if you don't pass your own)                                                                          |
 | `UnmountCommands`="-u -z"                         |     | default unmount commands                                                                                                          |
 | `AccessFolder`="/mnt"                             |     | access with --volumes-from rclone-mount, changes of AccessFolder have no impact because its the exposed folder in the dockerfile. |
 | `AutoUpgrade`="false"                             |     | set to `true` to run `apk upgrade` on every container start                                                                       |
@@ -54,11 +54,11 @@ The image reports unhealthy when the mount is missing or rclone crashed and left
 
 ## Use your own MountCommands with:
 
-```vim
+```sh
 -e MountCommands="--allow-other --allow-non-empty --dir-cache-time 48h --poll-interval 5m --buffer-size 128M"
 ```
 
-All Commands can be found at [https://rclone.org/commands/rclone_mount/](https://rclone.org/commands/rclone_mount/). Use `--buffer-size 256M` (dont go too high), when you encounter some "Direct Stream" problems on Plex Server for example.
+All Commands can be found at [https://rclone.org/commands/rclone_mount/](https://rclone.org/commands/rclone_mount/). Use `--buffer-size 256M` (don't go too high) when you encounter "Direct Stream" problems on Plex Server for example.
 
 ## Troubleshooting:
 
