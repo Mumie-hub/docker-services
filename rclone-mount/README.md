@@ -40,7 +40,6 @@ The Container uses S6 Overlay, to handle docker stop/restart ( fusermount -uz $M
 | `ConfigName`=".rclone.conf"                       |     | #INSIDE Container: /config/.rclone.conf                                                                                           |
 | `MountCommands`="--allow-other --allow-non-empty" |     | default mount commands (used if you don't pass your own)                                                                          |
 | `UnmountCommands`="-u -z"                         |     | default unmount commands                                                                                                          |
-| `AccessFolder`="/mnt"                             |     | access with --volumes-from rclone-mount, changes of AccessFolder have no impact because its the exposed folder in the dockerfile. |
 | `AutoUpgrade`="false"                             |     | set to `true` to run `apk upgrade` on every container start                                                                       |
 | `S6_KILL_FINISH_MAXTIME`="6000"                   |     | time in ms rclone gets to unmount on shutdown, keep the docker stop timeout about 3s above this value                             |
 

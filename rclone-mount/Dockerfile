@@ -32,7 +32,6 @@ ARG OVERLAY_KEY
 ARG TARGETARCH
 
 ENV DEBUG="false" \
-    AccessFolder="/mnt" \
     RemotePath="mediaefs:" \
     MountPoint="/mnt/mediaefs" \
     ConfigDir="/config" \
@@ -75,6 +74,6 @@ HEALTHCHECK --interval=60s --timeout=10s --start-period=30s --retries=3 CMD ["/h
 ENTRYPOINT ["/init"]
 
 # Use this docker Options in run
-# --cap-add SYS_ADMIN --device /dev/fuse --security-opt apparmor:unconfined
+# --cap-add SYS_ADMIN --device /dev/fuse --security-opt apparmor=unconfined
 # -v /path/to/config/.rclone.conf:/config/.rclone.conf
 # -v /mnt/mediaefs:/mnt/mediaefs:shared
