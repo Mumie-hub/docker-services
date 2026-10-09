@@ -63,7 +63,9 @@ All Commands can be found at [https://rclone.org/commands/rclone_mount/](https:/
 
 ## Troubleshooting:
 
-When you force remove the container, you have to `sudo fusermount -u -z /host/mount/point` on the hostsystem!
+The mount is only removed from the host while the container is still running. If the container is killed (stop timeout exceeded, `docker kill`, docker daemon crash), a dead mount stays behind on the host and docker cannot start the container again until you run `sudo fusermount -u -z /host/mount/point` on the hostsystem!
+
+Other containers using the mount (Plex etc.) need the volume with `:rslave` (e.g. `-v /host/mount/point:/media:rslave`), otherwise they do not see the mount when rclone mounts after them or remounts after a restart.
 
 ## Todo
 

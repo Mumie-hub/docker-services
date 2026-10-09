@@ -14,6 +14,8 @@ stopped(){
 }
 
 crashed(){
+    # mark the service down so s6 does not restart rclone on the dead mount before the container stops
+    s6-svc -d /var/run/s6/services/rclone-mount
     # bring the container down so cont-finish.d cleans up the mount and the restart policy takes over
     echo -e "${PREFIX} ${Red}rclone exited unexpectedly (exit code ${ExitCode}${Signal:+, signal ${Signal}}), stopping container[ERROR]${Color_Off}"
     s6-svscanctl -t /var/run/s6/services
