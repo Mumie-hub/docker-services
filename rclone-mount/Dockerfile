@@ -18,7 +18,7 @@ RUN apk add --no-cache --update ca-certificates go git \
     && git clone https://github.com/rclone/rclone.git \
     && cd rclone \
     && git checkout tags/${IMAGE_VERSION} \
-    && go build
+    && go build -p 2
 
 
 # Image
