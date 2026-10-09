@@ -30,10 +30,11 @@ See the README in each service folder for the required `docker run` options, vol
 The repository lives on GitLab and is mirrored to [GitHub](https://github.com/Mumie-hub/docker-services).
 
 - **GitLab CI** builds the images with Kaniko on a Kubernetes runner when files in a service folder change:
-  - `dev` branch: `<service>:dev` in the GitLab registry
-  - `master` branch: `<service>:<version>` and `<service>:latest` in the GitLab registry, then a manual job copies them to Docker Hub (`mumiehub/<service>`)
-- **GitHub Actions** builds rclone-mount for amd64 and arm64 and publishes it to GHCR (`ghcr.io/mumie-hub/rclone-mount`).
+  - `dev` branch: `<service>:dev` and `<service>:dev-<version>` in the GitLab registry
+  - `master` branch: `<service>:<version>-<commit>`, `<service>:<version>`, `<service>:<major.minor>` and `<service>:latest` in the GitLab registry, then a manual job copies them to Docker Hub (`mumiehub/<service>`)
+- **GitHub Actions** builds rclone-mount for amd64 and arm64 and publishes it to GHCR (`ghcr.io/mumie-hub/rclone-mount`) with the same tags.
+- **Renovate** runs in a scheduled GitLab pipeline and opens merge requests into `dev` when a new upstream version is released (e.g. rclone).
 
-The version of the upstream software is set in `<service>/version` (e.g. `rclone-mount/version`). It is passed to the build as `IMAGE_VERSION` and used as image tag. Services without a version file are tagged `latest`.
+The version of the upstream software is set in `<service>/version` (e.g. `rclone-mount/version`). It is passed to the build as `IMAGE_VERSION` and used as image tag. The `<version>-<commit>` tag never changes, the other tags move to the newest build. Services without a version file are tagged `<commit>` and `latest`.
 
 Changes go to the `dev` branch first and are merged into `master` with a merge request.

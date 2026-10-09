@@ -7,6 +7,7 @@ variables:
 stages:
   - build
   - push
+  - renovate
 
 
 include:
@@ -55,3 +56,24 @@ push:smb-mount:
     ENV: smb-mount
   needs:
     - job: build:smb-mount
+
+
+# runs only in scheduled pipelines, needs the masked CI/CD variables RENOVATE_TOKEN and GITHUB_COM_TOKEN
+renovate:
+  stage: renovate
+  image:
+    name: renovate/renovate:44
+    entrypoint: [""]
+  variables:
+    RENOVATE_PLATFORM: gitlab
+    RENOVATE_ENDPOINT: $CI_API_V4_URL
+    RENOVATE_REPOSITORIES: $CI_PROJECT_PATH
+    RENOVATE_ONBOARDING: "false"
+    KUBERNETES_CPU_REQUEST: 200m
+    KUBERNETES_CPU_LIMIT: 1000m
+    KUBERNETES_MEMORY_REQUEST: 512Mi
+    KUBERNETES_MEMORY_LIMIT: 2048Mi
+  script:
+    - renovate
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
