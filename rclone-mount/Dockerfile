@@ -19,7 +19,7 @@ ENV GOPATH="/go" \
 RUN apk add --no-cache --update ca-certificates go git \
     && git clone --depth 1 --branch ${IMAGE_VERSION} https://github.com/rclone/rclone.git \
     && cd rclone \
-    && go build -p 2 \
+    && go build \
     && rm -rf /root/.cache /go/pkg .git
 
 
