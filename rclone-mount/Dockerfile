@@ -12,13 +12,15 @@ ARG IMAGE_VERSION
 WORKDIR /go/src/github.com/rclone/rclone/
 
 ENV GOPATH="/go" \
-    GO111MODULE="on"
+    GO111MODULE="on" \
+    GOMAXPROCS="2" \
+    GOMEMLIMIT="4GiB"
 
 RUN apk add --no-cache --update ca-certificates go git \
-    && git clone https://github.com/rclone/rclone.git \
+    && git clone --depth 1 --branch ${IMAGE_VERSION} https://github.com/rclone/rclone.git \
     && cd rclone \
-    && git checkout tags/${IMAGE_VERSION} \
-    && go build
+    && go build \
+    && rm -rf /root/.cache /go/pkg .git
 
 
 # Image
