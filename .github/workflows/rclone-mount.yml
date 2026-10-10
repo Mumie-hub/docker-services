@@ -37,18 +37,19 @@ jobs:
       - name: Determine tags
         id: meta
         run: |
-          VERSION=$(cat rclone-mount/version | tr -d '[:space:]')
+          VERSION=$(tr -d '[:space:]' < rclone-mount/version)
+          MINOR=$(echo "$VERSION" | sed -nE 's/^(v?[0-9]+\.[0-9]+)\.[0-9]+$/\1/p')
           IMAGE="ghcr.io/${{ github.repository_owner }}/rclone-mount"
           IMAGE=$(echo "$IMAGE" | tr '[:upper:]' '[:lower:]')
 
           if [ "${{ github.ref_name }}" = "master" ]; then
-            TAGS="${IMAGE}:${VERSION},${IMAGE}:latest"
+            TAGS="${VERSION}-${GITHUB_SHA::8} ${VERSION} ${MINOR} latest"
           else
-            TAGS="${IMAGE}:${{ github.ref_name }},${IMAGE}:${{ github.ref_name }}-${VERSION}"
+            TAGS="${{ github.ref_name }} ${{ github.ref_name }}-${VERSION} ${{ github.ref_name }}-${GITHUB_SHA::8}"
           fi
 
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
-          echo "tags=${TAGS}" >> $GITHUB_OUTPUT
+          echo "tags=$(for TAG in $TAGS; do printf '%s:%s,' "$IMAGE" "$TAG"; done | sed 's/,$//')" >> $GITHUB_OUTPUT
 
       - name: Build and push multi-arch image
         uses: docker/build-push-action@v6

@@ -1,24 +1,38 @@
 #!/usr/bin/with-contenv sh
 
-source /etc/colors.sh
+. /etc/colors.sh
+. /etc/mount-functions.sh
 
-PREFFIX="[cont-init.d] $(s6-basename ${0}):"
+PREFIX="[cont-init.d] $(s6-basename "${0}"):"
 
-#check if the MountPoint is empty
-if [ "$(ls -A ${MountPoint})" ]; then
-    echo -e "${PREFFIX} ${Red}MountPoint folder not empty[ERROR]${Color_Off}"
-    #todo
-fi
-
-#check for other fsmounts, stop mounting if other MountPoint exists
-#mount | grep -c $MountPoint
-
-if grep -Eq ''$RemotePath'.*'$MountPoint'|'$MountPoint'.*'$RemotePath'' /proc/mounts; then
-    #exit container here
-    echo -e "${PREFFIX} ${Red}found other MountPoint in /proc/mounts${Color_Off}"
-    #cleanup mountpoint
+if [ ! -f "${ConfigPath}" ]; then
+    echo -e "${PREFIX} ${Red}rclone config not found at ${ConfigPath}[ERROR]${Color_Off}"
     exit 1
-else
-    echo -e "${PREFFIX} ${Green}MountPoint $MountPoint is ready${Color_Off}"
-    exit 0
 fi
+
+# a previous container that did not shut down cleanly leaves a dead mount behind
+if isRcloneMounted; then
+    if ! hasSharedParent; then
+        echo -e "${PREFIX} ${Red}${MountPoint} is a dead FUSE mount from the host, run 'fusermount -uz /host/mount/point' on the host[ERROR]${Color_Off}"
+        exit 1
+    fi
+
+    echo -e "${PREFIX} ${Yellow}found stale mount at ${MountPoint}, unmounting${Color_Off}"
+    fusermount ${UnmountCommands} "${MountPoint}" || umount -l "${MountPoint}"
+
+    if isRcloneMounted; then
+        echo -e "${PREFIX} ${Red}could not remove stale mount at ${MountPoint}[ERROR]${Color_Off}"
+        exit 1
+    fi
+fi
+
+if ! isMountPointShared; then
+    echo -e "${PREFIX} ${Yellow}${MountPoint} is not on a shared mount, the host and other containers will not see the rclone mount (use -v /host/mount/point:${MountPoint}:shared)${Color_Off}"
+fi
+
+if [ -n "$(ls -A "${MountPoint}" 2>/dev/null)" ]; then
+    echo -e "${PREFIX} ${Yellow}MountPoint ${MountPoint} is not empty${Color_Off}"
+fi
+
+echo -e "${PREFIX} ${Green}MountPoint ${MountPoint} is ready${Color_Off}"
+exit 0

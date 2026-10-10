@@ -1,3 +1,9 @@
+.image_tags: &image_tags
+  - if [ -f "$ENV/$VERSION_FILE" ]; then ARG_IMAGE_VERSION=$(tr -d '[:space:]' < "$ENV/$VERSION_FILE"); else ARG_IMAGE_VERSION="latest"; fi
+  - IMAGE_MINOR=$(echo "$ARG_IMAGE_VERSION" | sed -nE 's/^(v?[0-9]+\.[0-9]+)\.[0-9]+$/\1/p')
+  - if [ "$ARG_IMAGE_VERSION" = "latest" ]; then IMAGE_BUILD_TAG="$CI_COMMIT_SHORT_SHA"; else IMAGE_BUILD_TAG="$ARG_IMAGE_VERSION-$CI_COMMIT_SHORT_SHA"; fi
+  - echo "version $ARG_IMAGE_VERSION, build tag $IMAGE_BUILD_TAG"
+
 .kaniko_build_template:
   stage: build
   image:
@@ -6,17 +12,23 @@
   variables:
     VERSION_FILE: version
   before_script:
-    - if [ -e "$ENV/$VERSION_FILE" ];
-      then ARG_IMAGE_VERSION=$(grep -E -o "(.*)" ${ENV}/${VERSION_FILE} | cut -d\" -f2);
-      else ARG_IMAGE_VERSION="latest";
-      fi
-    - echo $ARG_IMAGE_VERSION
+    - *image_tags
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
   script:
-    - if [ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ];
-      then /kaniko/executor --context $CI_PROJECT_DIR/$ENV --dockerfile Dockerfile --build-arg IMAGE_VERSION=$ARG_IMAGE_VERSION --snapshot-mode=redo --compressed-caching=false --destination $CI_REGISTRY_IMAGE/$ENV:$ARG_IMAGE_VERSION --destination $CI_REGISTRY_IMAGE/$ENV:latest;
-      else /kaniko/executor --context $CI_PROJECT_DIR/$ENV --dockerfile Dockerfile --build-arg IMAGE_VERSION=$ARG_IMAGE_VERSION --snapshot-mode=redo --compressed-caching=false --destination $CI_REGISTRY_IMAGE/$ENV:$CI_COMMIT_REF_SLUG;
+    - |
+      if [ "$CI_COMMIT_BRANCH" = "$CI_DEFAULT_BRANCH" ]; then
+        TAGS="$IMAGE_BUILD_TAG $ARG_IMAGE_VERSION $IMAGE_MINOR latest"
+      elif [ "$ARG_IMAGE_VERSION" = "latest" ]; then
+        TAGS="$CI_COMMIT_REF_SLUG $CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA"
+      else
+        TAGS="$CI_COMMIT_REF_SLUG $CI_COMMIT_REF_SLUG-$ARG_IMAGE_VERSION $CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA"
       fi
+      DESTINATIONS=""
+      for TAG in $(echo $TAGS | tr ' ' '\n' | sort -u); do
+        DESTINATIONS="$DESTINATIONS --destination $CI_REGISTRY_IMAGE/$ENV:$TAG"
+      done
+      echo "destinations:$DESTINATIONS"
+      /kaniko/executor --context $CI_PROJECT_DIR/$ENV --dockerfile Dockerfile --build-arg IMAGE_VERSION=$ARG_IMAGE_VERSION --snapshot-mode=redo --compressed-caching=false $DESTINATIONS
   rules:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "dev"'
       changes:
@@ -28,7 +40,6 @@
     name: "gcr.io/go-containerregistry/crane:debug"
     entrypoint: [""]
   variables:
-    # GIT_STRATEGY: none
     DOCKER_REGISTRY: "docker.io"
     VERSION_FILE: version
     KUBERNETES_CPU_REQUEST: 100m
@@ -36,18 +47,16 @@
     KUBERNETES_MEMORY_REQUEST: 128Mi
     KUBERNETES_MEMORY_LIMIT: 512Mi
   before_script:
-    - if [ -e "$ENV/$VERSION_FILE" ];
-      then ARG_IMAGE_VERSION=$(grep -E -o "(.*)" ${ENV}/${VERSION_FILE} | cut -d\" -f2);
-      else ARG_IMAGE_VERSION="latest";
-      fi
-    - echo $ARG_IMAGE_VERSION
+    - *image_tags
     - crane auth login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - crane auth login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_TOKEN $DOCKER_REGISTRY
   script:
-    - if [ "$ARG_IMAGE_VERSION" == "latest" ];
-      then crane copy $CI_REGISTRY_IMAGE/$ENV:$ARG_IMAGE_VERSION $DOCKER_REGISTRY/$DOCKER_REGISTRY_USER/$ENV:latest;
-      else crane copy $CI_REGISTRY_IMAGE/$ENV:$ARG_IMAGE_VERSION $DOCKER_REGISTRY/$DOCKER_REGISTRY_USER/$ENV:$ARG_IMAGE_VERSION && crane tag $DOCKER_REGISTRY/$DOCKER_REGISTRY_USER/$ENV:$ARG_IMAGE_VERSION latest;
-      fi
+    - |
+      DST="$DOCKER_REGISTRY/$DOCKER_REGISTRY_USER/$ENV"
+      crane copy "$CI_REGISTRY_IMAGE/$ENV:$IMAGE_BUILD_TAG" "$DST:$IMAGE_BUILD_TAG"
+      for TAG in $(echo $ARG_IMAGE_VERSION $IMAGE_MINOR latest | tr ' ' '\n' | sort -u); do
+        crane tag "$DST:$IMAGE_BUILD_TAG" "$TAG"
+      done
   rules:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
       changes:

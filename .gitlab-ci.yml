@@ -1,6 +1,4 @@
 variables:
-  # LATEST_VER: mumie/app:latest
-  # MAJOR_VER: mumie/app:2
   KUBERNETES_CPU_REQUEST: 500m
   KUBERNETES_CPU_LIMIT: 2000m
   KUBERNETES_MEMORY_REQUEST: 2048Mi
@@ -12,14 +10,7 @@ stages:
 
 
 include:
-  - '/.gitlab-ci.docker.yml'
   - '/.gitlab-ci.kaniko.yml'
-
-
-# before_script:
-  # - echo "starting new job in $REGPATH"
-  # - docker info
-  #- docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
 
 # jobs ################################
@@ -43,42 +34,6 @@ build:smb-mount:
   variables:
     ENV: smb-mount
 
-
-#docker_build2:
-#  stage: build
-#  script:
-#  - docker info
-#  - docker build -t $LATEST_VER -t $MAJOR_VER .
-
-
-# docker_test1:
-#   stage: test
-#   image: docker:latest
-#   services:
-#   - docker:dind
-#   script:
-#   - echo "finished"
-#   # do some test
-#   #- docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-#   only:
-#     refs:
-#       - master
-#       - dev
-
-# docker_push1:
-#   stage: push
-#   image: docker:latest
-#   services:
-#   - docker:dind
-#   script:
-#   - echo "manual job done"
-#   # push image to registry
-#   #- docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-#   only:
-#     refs:
-#       - master
-#       - dev
-#   when: manual
 
 push:rclone-mount:
   extends: .crane_push_docker_template
