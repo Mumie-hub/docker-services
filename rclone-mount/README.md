@@ -54,11 +54,20 @@ Tags:
 | `MountCommands`="--allow-other --allow-non-empty" |     | default mount commands (used if you don't pass your own)                                                                          |
 | `UnmountCommands`="-u -z"                         |     | default unmount commands                                                                                                          |
 | `AutoUpgrade`="false"                             |     | set to `true` to run `apk upgrade` on every container start                                                                       |
-| `S6_KILL_FINISH_MAXTIME`="6000"                   |     | time in ms rclone gets to unmount on shutdown, keep the docker stop timeout about 3s above this value                             |
+| `S6_KILL_FINISH_MAXTIME`="6000"                   |     | time in ms for the unmount on shutdown, rclone gets this minus 2s to unmount itself, the rest is left for the forced unmount      |
+| `S6_SERVICES_GRACETIME`="1000"                    |     | time in ms s6 waits for the services to stop after the unmount                                                                    |
+| `S6_KILL_GRACETIME`="1000"                        |     | time in ms between TERM and KILL for the remaining processes at the end of the shutdown                                           |
+| `S6_BEHAVIOUR_IF_STAGE2_FAILS`="2"                |     | `2` stops the container when a start check fails (missing config, stale mount), `0` ignores it and starts rclone anyway           |
 
 ## Shutdown
 
-rclone needs time to unmount cleanly. The defaults fit into the docker default stop timeout of 10s. If rclone needs longer (e.g. pending uploads), raise `S6_KILL_FINISH_MAXTIME` and give the container a stop timeout about 3s above it (e.g. `-e S6_KILL_FINISH_MAXTIME=20000 --stop-timeout 23` or `stop_grace_period: 23s` in compose), otherwise docker kills it and the mount stays behind on the host.
+rclone needs time to unmount cleanly. The shutdown takes up to `S6_KILL_FINISH_MAXTIME` + `S6_SERVICES_GRACETIME` + `S6_KILL_GRACETIME` + about 0.5s, with the defaults about 8.5s, so it fits into the docker default stop timeout of 10s. If the container is killed before, the mount stays behind on the host.
+
+If rclone needs longer (e.g. pending uploads with `--vfs-cache-mode writes`), raise `S6_KILL_FINISH_MAXTIME` and give the container a stop timeout about 3s above it:
+
+- docker: `-e S6_KILL_FINISH_MAXTIME=20000 --stop-timeout 23`
+- compose: `S6_KILL_FINISH_MAXTIME: "20000"` and `stop_grace_period: 23s`
+- Kubernetes: `S6_KILL_FINISH_MAXTIME: "20000"` and `terminationGracePeriodSeconds: 23`
 
 ## Healthcheck
 
