@@ -8,6 +8,15 @@ Lightweight and simple Container Image (`alpine:latest - 77 MiB`) with compiled 
 
 The Container uses S6 Overlay, to handle docker stop/restart ( fusermount -uz $MountPoint is applied on app crashes also) and also preparing the mountpoint.
 
+# Images:
+
+| Registry                  | Image                            | Architectures  |
+| ------------------------- | -------------------------------- | -------------- |
+| Docker Hub                | `mumiehub/rclone-mount`          | amd64          |
+| GitHub Container Registry | `ghcr.io/mumie-hub/rclone-mount` | amd64, arm64   |
+
+Tags: `latest` and the rclone version the image was built with (e.g. `v1.75.2`). Development builds are published on GHCR as `dev` and `dev-<version>`, don't use them in production.
+
 # Usage Example:
 
     docker run -d --name rclone-mount \
