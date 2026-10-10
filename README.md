@@ -25,6 +25,8 @@ The teamspeakserver image is deprecated and not maintained anymore. Use the offi
 
 See the README in each service folder for the required `docker run` options, volumes and environment variables. Mount containers like rclone-mount and smb-mount need `--cap-add SYS_ADMIN`, `--security-opt apparmor=unconfined` and a `:shared` volume so the mount is visible on the host.
 
+For Kubernetes there is an example for rclone-mount with the TrueCharts app-template Helm chart in [helm/rclone-mount](helm/rclone-mount/).
+
 ## Build and release
 
 The repository lives on GitLab and is mirrored to [GitHub](https://github.com/Mumie-hub/docker-services).

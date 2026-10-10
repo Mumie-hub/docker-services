@@ -1,0 +1,142 @@
+# Example values for the TrueCharts app-template chart
+# https://truecharts.org/charts/stable/app-template
+#
+# helm install rclone oci://oci.trueforge.org/truecharts/app-template --version 18.23.5 \
+#   --namespace rclone --create-namespace -f values.yaml
+
+global:
+  metallb:
+    addServiceAnnotations: false
+  traefik:
+    addServiceAnnotations: false
+operator:
+  register: false
+  verify:
+    enabled: false
+
+TZ: Europe/Berlin
+
+image:
+  repository: ghcr.io/mumie-hub/rclone-mount
+  # pin an exact build with e.g. v1.75.2-<commit>
+  tag: v1.75.2
+  pullPolicy: IfNotPresent
+
+workload:
+  main:
+    strategy: Recreate
+    replicas: 1
+    podSpec:
+      # pin the pod to the node that should get the mount
+      # nodeSelector:
+      #   kubernetes.io/hostname: node01
+      # S6_KILL_FINISH_MAXTIME (time rclone gets to unmount) + 10s
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        fsGroup: 0
+        fsGroupChangePolicy: OnRootMismatch
+        supplementalGroups: []
+      containers:
+        main:
+          enabled: true
+          primary: true
+          # privileged is required for FUSE and Bidirectional mount propagation
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+            runAsGroup: 0
+            readOnlyRootFilesystem: false
+            allowPrivilegeEscalation: true
+            privileged: true
+            seccompProfile:
+              type: Unconfined
+            capabilities:
+              add: []
+              drop: []
+          env:
+            RemotePath: "mediaefs:"
+            # must be below the hostPath of persistence.mount
+            MountPoint: /mnt/mediaefs
+            # uid/gid 568 is the default user of TrueCharts apps (Plex etc.)
+            MountCommands: >-
+              --allow-other --uid 568 --gid 568 --umask 022 --default-permissions
+              --allow-non-empty --dir-cache-time 168h --poll-interval 5m --buffer-size 128M
+            S6_KILL_FINISH_MAXTIME: "20000"
+          probes:
+            # restarts the pod when the mount is missing or dead,
+            # needs an image with the reworked s6 scripts, disable it for older images
+            liveness:
+              enabled: true
+              type: exec
+              command:
+                - /healthcheck.sh
+              spec:
+                initialDelaySeconds: 30
+                periodSeconds: 60
+                timeoutSeconds: 10
+                failureThreshold: 3
+            readiness:
+              enabled: false
+            startup:
+              enabled: false
+
+podOptions:
+  defaultSpread: false
+
+persistence:
+  # rclone config (/config/.rclone.conf), needs to be writable for OAuth token refreshes
+  config:
+    enabled: true
+    type: pvc
+    mountPath: /config
+    accessMode: ReadWriteOnce
+    size: 100Mi
+  # mount the parent folder of MountPoint, not the mount point itself,
+  # so a stale mount left by a killed pod is removed on the next start
+  mount:
+    enabled: true
+    type: hostPath
+    hostPath: /mnt
+    hostPathType: Directory
+    mountPath: /mnt
+    mountPropagation: Bidirectional
+  varrun:
+    enabled: false
+  devshm:
+    enabled: false
+  shared:
+    enabled: false
+  varlogs:
+    enabled: false
+  tmp:
+    enabled: false
+
+resources:
+  limits:
+    memory: 4096Mi
+  requests:
+    cpu: 100m
+    memory: 512Mi
+
+service:
+  main:
+    enabled: false
+
+ingress:
+  main:
+    enabled: false
+
+portal:
+  open:
+    enabled: false
+
+metrics:
+  main:
+    enabled: false
+
+redis:
+  enabled: false
+mariadb:
+  enabled: false
+mongodb:
+  enabled: false
