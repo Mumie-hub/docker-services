@@ -30,8 +30,6 @@
       echo "destinations:$DESTINATIONS"
       /kaniko/executor --context $CI_PROJECT_DIR/$ENV --dockerfile Dockerfile --build-arg IMAGE_VERSION=$ARG_IMAGE_VERSION --snapshot-mode=redo --compressed-caching=false $DESTINATIONS
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule"'
-      when: never
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "dev"'
       changes:
         - '${ENV}/**/*'
@@ -60,8 +58,6 @@
         crane tag "$DST:$IMAGE_BUILD_TAG" "$TAG"
       done
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule"'
-      when: never
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
       changes:
         - '${ENV}/**/*'

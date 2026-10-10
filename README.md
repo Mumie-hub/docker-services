@@ -33,7 +33,7 @@ The repository lives on GitLab and is mirrored to [GitHub](https://github.com/Mu
   - `dev` branch: `<service>:dev` and `<service>:dev-<version>` in the GitLab registry
   - `master` branch: `<service>:<version>-<commit>`, `<service>:<version>`, `<service>:<major.minor>` and `<service>:latest` in the GitLab registry, then a manual job copies them to Docker Hub (`mumiehub/<service>`)
 - **GitHub Actions** builds rclone-mount for amd64 and arm64 and publishes it to GHCR (`ghcr.io/mumie-hub/rclone-mount`) with the same tags.
-- **Renovate** runs in a scheduled GitLab pipeline and opens merge requests into `dev` when a new upstream version is released (e.g. rclone).
+- **Renovate** opens merge requests into `dev` when a new upstream version is released (e.g. rclone), configured in `renovate.json`.
 
 The version of the upstream software is set in `<service>/version` (e.g. `rclone-mount/version`). It is passed to the build as `IMAGE_VERSION` and used as image tag. The `<version>-<commit>` tag never changes, the other tags move to the newest build. Services without a version file are tagged `<commit>` and `latest`.
 
