@@ -19,7 +19,7 @@ Tags:
 
 - `latest`, `v1.75` and `v1.75.2`: newest build for that rclone version, they move when the image is rebuilt
 - `v1.75.2-<commit>` (e.g. `v1.75.2-fa84c0e1`): one fixed build, use this to pin an exact image
-- `dev` and `dev-<version>`: development builds on GHCR, don't use them in production
+- `dev`, `dev-<version>` and `dev-<commit>`: development builds, don't use them in production. `dev-<commit>` builds are deleted from GHCR after 2 weeks (the newest 5 are kept)
 
 # Usage Example:
 

@@ -45,7 +45,7 @@ jobs:
           if [ "${{ github.ref_name }}" = "master" ]; then
             TAGS="${VERSION}-${GITHUB_SHA::8} ${VERSION} ${MINOR} latest"
           else
-            TAGS="${{ github.ref_name }} ${{ github.ref_name }}-${VERSION}"
+            TAGS="${{ github.ref_name }} ${{ github.ref_name }}-${VERSION} ${{ github.ref_name }}-${GITHUB_SHA::8}"
           fi
 
           echo "version=${VERSION}" >> $GITHUB_OUTPUT

@@ -1,0 +1,40 @@
+name: Clean up GHCR images
+
+# needs the repository secret GHCR_CLEANUP_TOKEN: classic personal access token with read:packages and delete:packages
+
+on:
+  schedule:
+    - cron: "0 3 * * 0"
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: Only list what would be deleted
+        type: boolean
+        default: true
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete old dev builds
+        uses: snok/container-retention-policy@v3.1.0
+        with:
+          account: user
+          token: ${{ secrets.GHCR_CLEANUP_TOKEN }}
+          image-names: rclone-mount
+          image-tags: "dev-*"
+          tag-selection: tagged
+          cut-off: 2w
+          keep-n-most-recent: 5
+          dry-run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run || false }}
+
+      # images replaced by a newer build of a moving tag, multi-arch children of kept images are protected
+      - name: Delete untagged images
+        uses: snok/container-retention-policy@v3.1.0
+        with:
+          account: user
+          token: ${{ secrets.GHCR_CLEANUP_TOKEN }}
+          image-names: rclone-mount
+          tag-selection: untagged
+          cut-off: 1w
+          dry-run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run || false }}
