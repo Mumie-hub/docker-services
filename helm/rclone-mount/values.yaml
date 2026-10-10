@@ -30,8 +30,8 @@ workload:
       # pin the pod to the node that should get the mount
       # nodeSelector:
       #   kubernetes.io/hostname: node01
-      # S6_KILL_FINISH_MAXTIME (time rclone gets to unmount) + 10s
-      terminationGracePeriodSeconds: 30
+      # fits the image shutdown defaults, raise it together with S6_KILL_FINISH_MAXTIME
+      terminationGracePeriodSeconds: 10
       securityContext:
         fsGroup: 0
         fsGroupChangePolicy: OnRootMismatch
@@ -61,7 +61,6 @@ workload:
             MountCommands: >-
               --allow-other --uid 568 --gid 568 --umask 022 --default-permissions
               --allow-non-empty --dir-cache-time 168h --poll-interval 5m --buffer-size 128M
-            S6_KILL_FINISH_MAXTIME: "20000"
           probes:
             # restarts the pod when the mount is missing or dead,
             # needs an image with the reworked s6 scripts, disable it for older images

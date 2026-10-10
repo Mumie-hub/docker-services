@@ -15,5 +15,5 @@ Copy your rclone config to `/config/.rclone.conf` in the config PVC, rclone can'
 - The host folder `/mnt` is mounted into the pod at the same path and rclone mounts at `MountPoint` below it (`/mnt/mediaefs`), so the node sees the mount at the same path.
 - Mount the parent folder, not the mount point itself. If a pod is killed, a dead mount stays on the node. With the parent folder mounted, the next pod removes it on start. Otherwise run `fusermount -uz /mnt/mediaefs` on the node.
 - Pin the pod to a node with a `nodeSelector`. Pods using the mount (Plex etc.) need to run on the same node and mount the folder with `mountPropagation: HostToContainer`, otherwise they don't see the mount after rclone restarts.
-- rclone gets `S6_KILL_FINISH_MAXTIME` (20s) to unmount on shutdown, keep `terminationGracePeriodSeconds` 10s above it.
+- The image defaults finish the shutdown within 10s, so `terminationGracePeriodSeconds: 10` is enough. If rclone needs longer to unmount (e.g. pending uploads with `--vfs-cache-mode writes`), raise `S6_KILL_FINISH_MAXTIME` (ms) in `env` and set `terminationGracePeriodSeconds` about 3s above it.
 - The liveness probe needs an image with the reworked s6 scripts. Disable it for older images.
