@@ -1,0 +1,15 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "baseBranchPatterns": ["dev"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "rclone version built into the rclone-mount image",
+      "managerFilePatterns": ["/^rclone-mount/version$/"],
+      "matchStrings": ["^(?<currentValue>v\\d+\\.\\d+\\.\\d+)"],
+      "depNameTemplate": "rclone/rclone",
+      "datasourceTemplate": "github-releases"
+    }
+  ]
+}

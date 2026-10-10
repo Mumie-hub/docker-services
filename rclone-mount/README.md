@@ -15,7 +15,11 @@ The Container uses S6 Overlay, to handle docker stop/restart ( fusermount -uz $M
 | Docker Hub                | `mumiehub/rclone-mount`          | amd64          |
 | GitHub Container Registry | `ghcr.io/mumie-hub/rclone-mount` | amd64, arm64   |
 
-Tags: `latest` and the rclone version the image was built with (e.g. `v1.75.2`). Development builds are published on GHCR as `dev` and `dev-<version>`, don't use them in production.
+Tags:
+
+- `latest`, `v1.75` and `v1.75.2`: newest build for that rclone version, they move when the image is rebuilt
+- `v1.75.2-<commit>` (e.g. `v1.75.2-fa84c0e1`): one fixed build, use this to pin an exact image
+- `dev` and `dev-<version>`: development builds on GHCR, don't use them in production
 
 # Usage Example:
 
