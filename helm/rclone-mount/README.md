@@ -7,7 +7,35 @@ helm install rclone oci://oci.trueforge.org/truecharts/app-template --version 18
   --namespace rclone --create-namespace -f values.yaml
 ```
 
-Copy your rclone config to `/config/.rclone.conf` in the config PVC, rclone can't mount without it.
+Put your rclone config at `/config/.rclone.conf` in the config PVC, or define the remote with environment variables from a secret, see [below](#configuration-without-rcloneconf).
+
+## Configuration without rclone.conf
+
+Create a secret with the remote as `RCLONE_CONFIG_<NAME>_<OPTION>` variables and load it into the container. `expandObjectName: false` makes the chart use the secret name as it is:
+
+```sh
+kubectl -n rclone create secret generic rclone-remote \
+  --from-literal=RCLONE_CONFIG_MYS3_TYPE=s3 \
+  --from-literal=RCLONE_CONFIG_MYS3_PROVIDER=AWS \
+  --from-literal=RCLONE_CONFIG_MYS3_ACCESS_KEY_ID=... \
+  --from-literal=RCLONE_CONFIG_MYS3_SECRET_ACCESS_KEY=...
+```
+
+```yaml
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          envFrom:
+            - secretRef:
+                name: rclone-remote
+                expandObjectName: false
+          env:
+            RemotePath: "mys3:bucket"
+```
+
+The config PVC can be disabled then (`persistence.config.enabled: false`). For OAuth remotes like Google Drive keep the config file, rclone can only save refreshed tokens there.
 
 ## How the mount works
 
@@ -40,7 +68,7 @@ workload:
 
 **Logging:** set `RCLONE_LOG_LEVEL` in `env` to `DEBUG`, `INFO`, `NOTICE` (default) or `ERROR`.
 
-**Start checks:** the pod stops when the rclone config is missing or a stale mount can't be removed (`S6_BEHAVIOUR_IF_STAGE2_FAILS: "2"`). Set it to `"0"` to start rclone anyway.
+**Start checks:** the pod stops when a stale mount can't be removed (`S6_BEHAVIOUR_IF_STAGE2_FAILS: "2"`). Set it to `"0"` to start rclone anyway.
 
 **Health check:** change `probes.liveness.spec` (`periodSeconds`, `failureThreshold`) to restart the pod faster or slower when the mount is dead, or set `probes.liveness.enabled: false` to turn it off.
 
