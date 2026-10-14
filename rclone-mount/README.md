@@ -18,6 +18,7 @@ The Container uses S6 Overlay, to handle docker stop/restart ( fusermount -uz $M
 Tags:
 
 - `latest`, `v1.75` and `v1.75.2`: newest build for that rclone version, they move when the image is rebuilt
+- `v1.75.2-r4`: release revision, counts up when the image is fixed without a new rclone version (scripts, base image) and starts again at `r1` with the next rclone version
 - `v1.75.2-<commit>` (e.g. `v1.75.2-fa84c0e1`): one fixed build, use this to pin an exact image
 - `dev`, `dev-<version>` and `dev-<commit>`: development builds, don't use them in production
 

@@ -20,6 +20,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          # full history to count the release revision
+          fetch-depth: 0
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -43,7 +46,10 @@ jobs:
           IMAGE=$(echo "$IMAGE" | tr '[:upper:]' '[:lower:]')
 
           if [ "${{ github.ref_name }}" = "master" ]; then
-            TAGS="${VERSION}-${GITHUB_SHA::8} ${VERSION} ${MINOR} latest"
+            # r1 for the master merge that set the version, +1 for every later master merge that changes rclone-mount/
+            BASE=$(git log -1 --first-parent --format=%H -- rclone-mount/version)
+            REVISION="r$(( $(git rev-list --count --first-parent "$BASE..HEAD" -- rclone-mount) + 1 ))"
+            TAGS="${VERSION}-${GITHUB_SHA::8} ${VERSION}-${REVISION} ${VERSION} ${MINOR} latest"
           else
             TAGS="${{ github.ref_name }} ${{ github.ref_name }}-${VERSION} ${{ github.ref_name }}-${GITHUB_SHA::8}"
           fi
