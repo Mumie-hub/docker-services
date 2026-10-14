@@ -14,6 +14,16 @@ include:
 
 
 # jobs ################################
+revisions:
+  extends: .revisions_template
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      changes:
+        - 'jdownloader/**/*'
+        - 'rclone-mount/**/*'
+        - 'sabnzbdvpn/**/*'
+        - 'smb-mount/**/*'
+
 build:jdownloader:
   extends: .kaniko_build_template
   variables:
@@ -41,6 +51,8 @@ push:rclone-mount:
     ENV: rclone-mount
   needs:
     - job: build:rclone-mount
+    - job: revisions
+      optional: true
 
 push:sabnzbdvpn:
   extends: .crane_push_docker_template
@@ -48,6 +60,8 @@ push:sabnzbdvpn:
     ENV: sabnzbdvpn
   needs:
     - job: build:sabnzbdvpn
+    - job: revisions
+      optional: true
 
 push:smb-mount:
   extends: .crane_push_docker_template
@@ -55,3 +69,5 @@ push:smb-mount:
     ENV: smb-mount
   needs:
     - job: build:smb-mount
+    - job: revisions
+      optional: true

@@ -2,7 +2,38 @@
   - if [ -f "$ENV/$VERSION_FILE" ]; then ARG_IMAGE_VERSION=$(tr -d '[:space:]' < "$ENV/$VERSION_FILE"); else ARG_IMAGE_VERSION="latest"; fi
   - IMAGE_MINOR=$(echo "$ARG_IMAGE_VERSION" | sed -nE 's/^(v?[0-9]+\.[0-9]+)\.[0-9]+$/\1/p')
   - if [ "$ARG_IMAGE_VERSION" = "latest" ]; then IMAGE_BUILD_TAG="$CI_COMMIT_SHORT_SHA"; else IMAGE_BUILD_TAG="$ARG_IMAGE_VERSION-$CI_COMMIT_SHORT_SHA"; fi
-  - echo "version $ARG_IMAGE_VERSION, build tag $IMAGE_BUILD_TAG"
+  # revision from the revisions job (dotenv), e.g. REVISION_RCLONE_MOUNT=r4
+  - eval "IMAGE_REVISION=\${REVISION_$(echo "$ENV" | tr 'a-z-' 'A-Z_'):-}"
+  - IMAGE_REVISION_TAG=""; if [ -n "$IMAGE_REVISION" ] && [ "$ARG_IMAGE_VERSION" != "latest" ]; then IMAGE_REVISION_TAG="$ARG_IMAGE_VERSION-$IMAGE_REVISION"; fi
+  - echo "version $ARG_IMAGE_VERSION, build tag $IMAGE_BUILD_TAG, revision tag ${IMAGE_REVISION_TAG:-none}"
+
+# release revision per service: r1 for the master merge that set the version in <service>/version,
+# +1 for every later master merge that changes the service folder
+.revisions_template:
+  stage: .pre
+  image:
+    name: alpine/git:2.54.0
+    entrypoint: [""]
+  variables:
+    GIT_DEPTH: 0
+    KUBERNETES_CPU_REQUEST: 100m
+    KUBERNETES_CPU_LIMIT: 500m
+    KUBERNETES_MEMORY_REQUEST: 128Mi
+    KUBERNETES_MEMORY_LIMIT: 512Mi
+  script:
+    - |
+      : > revisions.env
+      for f in */version; do
+        [ -f "$f" ] || continue
+        svc=${f%/version}
+        base=$(git log -1 --first-parent --format=%H -- "$f")
+        count=$(git rev-list --count --first-parent "$base..HEAD" -- "$svc")
+        echo "REVISION_$(echo "$svc" | tr 'a-z-' 'A-Z_')=r$((count + 1))" >> revisions.env
+      done
+      cat revisions.env
+  artifacts:
+    reports:
+      dotenv: revisions.env
 
 .kaniko_build_template:
   stage: build
@@ -14,10 +45,13 @@
   before_script:
     - *image_tags
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+  needs:
+    - job: revisions
+      optional: true
   script:
     - |
       if [ "$CI_COMMIT_BRANCH" = "$CI_DEFAULT_BRANCH" ]; then
-        TAGS="$IMAGE_BUILD_TAG $ARG_IMAGE_VERSION $IMAGE_MINOR latest"
+        TAGS="$IMAGE_BUILD_TAG $IMAGE_REVISION_TAG $ARG_IMAGE_VERSION $IMAGE_MINOR latest"
       elif [ "$ARG_IMAGE_VERSION" = "latest" ]; then
         TAGS="$CI_COMMIT_REF_SLUG $CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA"
       else
@@ -54,7 +88,7 @@
     - |
       DST="$DOCKER_REGISTRY/$DOCKER_REGISTRY_USER/$ENV"
       crane copy "$CI_REGISTRY_IMAGE/$ENV:$IMAGE_BUILD_TAG" "$DST:$IMAGE_BUILD_TAG"
-      for TAG in $(echo $ARG_IMAGE_VERSION $IMAGE_MINOR latest | tr ' ' '\n' | sort -u); do
+      for TAG in $(echo $IMAGE_REVISION_TAG $ARG_IMAGE_VERSION $IMAGE_MINOR latest | tr ' ' '\n' | sort -u); do
         crane tag "$DST:$IMAGE_BUILD_TAG" "$TAG"
       done
   rules:
