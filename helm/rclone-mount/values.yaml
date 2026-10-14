@@ -83,7 +83,8 @@ podOptions:
   defaultSpread: false
 
 persistence:
-  # rclone config (/config/.rclone.conf), needs to be writable for OAuth token refreshes
+  # rclone config (/config/.rclone.conf), needs to be writable for OAuth token refreshes.
+  # Not needed when the remote comes from RCLONE_CONFIG_* environment variables, see README.
   config:
     enabled: true
     type: pvc

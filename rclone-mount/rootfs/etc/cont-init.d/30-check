@@ -6,8 +6,19 @@
 PREFIX="[cont-init.d] $(s6-basename "${0}"):"
 
 if [ ! -f "${ConfigPath}" ]; then
-    echo -e "${PREFIX} ${Red}rclone config not found at ${ConfigPath}[ERROR]${Color_Off}"
-    exit 1
+    # remotes can also come from RCLONE_CONFIG_<NAME>_* environment variables or a connection string (":s3,...:bucket")
+    case "${RemotePath}" in
+        :*)
+            echo -e "${PREFIX} ${Blue}no rclone config at ${ConfigPath}, using the connection string in RemotePath${Color_Off}"
+            ;;
+        *)
+            if env | grep -q '^RCLONE_CONFIG_.*_TYPE='; then
+                echo -e "${PREFIX} ${Blue}no rclone config at ${ConfigPath}, using remotes from RCLONE_CONFIG_* environment variables${Color_Off}"
+            else
+                echo -e "${PREFIX} ${Yellow}no rclone config at ${ConfigPath} and no RCLONE_CONFIG_*_TYPE environment variable, ${RemotePath%%:*} is probably not defined${Color_Off}"
+            fi
+            ;;
+    esac
 fi
 
 # a previous container that did not shut down cleanly leaves a dead mount behind
